@@ -173,7 +173,7 @@ def chat(system: str, content_blocks: list[dict], max_tokens: int = 1024) -> str
             max_tokens=max_tokens,
             messages=[
                 {"role": "system", "content": system},
-                {"role": "user", "content": content_blocks},
+                {"role": "user", "content": content_blocks},  # type: ignore[arg-type]
             ],
         )
         return resp.choices[0].message.content or ""
@@ -182,7 +182,7 @@ def chat(system: str, content_blocks: list[dict], max_tokens: int = 1024) -> str
             model=_CLAUDE_CHAT,
             max_tokens=max_tokens,
             system=system,
-            messages=[{"role": "user", "content": content_blocks}],
+            messages=[{"role": "user", "content": content_blocks}],  # type: ignore[arg-type]
         )
         return "".join(b.text for b in resp.content if b.type == "text")
     raise ValueError(f"Unknown PROVIDER={p!r}.")
@@ -230,4 +230,5 @@ def generate_image(prompt: str, size: str = "1024x1024") -> bytes:
             f"Use PROVIDER=openai for image generation (gpt-image-1)."
         )
     resp = _openai_client().images.generate(model=_OPENAI_IMAGE, prompt=prompt, size=size)
-    return base64.b64decode(resp.data[0].b64_json)
+    assert resp.data is not None
+    return base64.b64decode(resp.data[0].b64_json or "")
