@@ -111,7 +111,7 @@ _BG = (245, 245, 240)
 _SCALE = 2  # each font pixel becomes 2x2 image pixels
 
 
-def _blank(width: int, height: int, color=_BG):
+def _blank(width: int, height: int, color: tuple[int, int, int] = _BG) -> list[list[tuple[int, int, int]]]:
     return [[color for _ in range(width)] for _ in range(height)]
 
 
