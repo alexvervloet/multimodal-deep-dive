@@ -68,14 +68,14 @@ def main() -> None:
     print("How many tokens does an image cost? (computed offline, no key)\n")
 
     if _RICH:
-        table = Table(title="Estimated image-input tokens")
+        table = Table(title="Estimated image-input tokens")  # type: ignore[possibly-undefined]
         table.add_column("image", style="cyan")
         table.add_column("size", justify="right")
         table.add_column("openai (gpt-4o-mini)", justify="right", style="green")
         table.add_column("claude", justify="right", style="magenta")
         for r in rows():
             table.add_row(*r)
-        Console().print(table)
+        Console().print(table)  # type: ignore[possibly-undefined]
     else:
         print(f"{'image':<22}{'size':>12}{'openai':>10}{'claude':>10}")
         for label, size, o, c in rows():
