@@ -197,6 +197,34 @@ tiles, which the phone-screenshot row demonstrates (halving each side saved
 
 ---
 
+## Section 11 — Native PDF input
+
+**Recall (`10`).** Section 4 extracted a document by screenshotting it and using
+vision. What does native PDF input do differently, and why is it the enterprise
+default?
+
+<details><summary>▸ Answer</summary>
+
+It hands the model the **document itself** (the PDF bytes as their own content
+block) instead of a picture of it. So the model reads the real text and page
+structure rather than OCR-ing pixels, and can take many pages in one call.
+Screenshot-to-vision is the fallback for a model that can't accept a PDF — not the
+starting point.
+</details>
+
+**Do.** A PDF block and an image block go in the *same* place in a request. What is
+that place, and what's the only per-provider difference?
+
+<details><summary>▸ Answer</summary>
+
+Both are content blocks in the one user turn, beside your text question — the "right
+modality in the right slot" idea again. The only difference is the envelope:
+`providers.pdf_block` builds a `file` part for OpenAI and a `document` block for
+Claude, from the same base64 bytes. Your example code never has to care which.
+</details>
+
+---
+
 ## Capstone — `extract.py`
 
 **Do.** Run `python hands_on/extract.py assets/receipt.png --token-cost`. You've
