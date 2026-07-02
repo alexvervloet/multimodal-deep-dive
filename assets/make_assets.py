@@ -11,6 +11,7 @@ self-contained and the assets tiny and self-made:
   receipt.png   — a small "receipt" image (the §3 structured-extraction demo)
   chart.png     — a tiny bar chart (the §4 multi-image comparison demo)
   note.wav      — one second of a 440 Hz tone (a stand-in audio clip for §5)
+  invoice.pdf   — a one-page invoice PDF (the §11 native-PDF-input demo)
 
 PNG is written by hand (zlib + a CRC) so you can *see* that an image is just
 bytes; WAV uses the stdlib `wave` module. You normally never need to run this —
@@ -180,6 +181,71 @@ def make_chart(path: str) -> None:
     write_png(path, canvas)
 
 
+def _pdf_escape(text: str) -> str:
+    """Escape the three characters a PDF text string treats specially."""
+    return text.replace("\\", r"\\").replace("(", r"\(").replace(")", r"\)")
+
+
+def make_invoice_pdf(path: str) -> None:
+    """A one-page invoice PDF, written by hand with the standard library only.
+
+    A PDF is just text-and-bytes: a header, a set of numbered objects (a catalog,
+    a page tree, a page, a content stream, a font), then a cross-reference table
+    listing each object's byte offset, then a trailer. We build the objects, track
+    where each one starts, and emit a correct xref so real parsers (and the vision
+    models) accept it. This is the §11 native-PDF demo input — a *document*, not a
+    screenshot of one."""
+    lines = [
+        "ACME CLOUD, INC.",
+        "Invoice INV-2026-0042",
+        "Date: 2026-06-20",
+        "Bill to: Dana Rivera",
+        "--------------------------------",
+        "Description          Qty   Amount",
+        "Pro plan (annual)      1  $240.00",
+        "Extra seats            3  $108.00",
+        "Priority support       1   $60.00",
+        "--------------------------------",
+        "Subtotal                  $408.00",
+        "Tax (8%)                   $32.64",
+        "Total                     $440.64",
+        "Due: 2026-07-20",
+    ]
+    # Build the content stream: start a text object, set font + leading, position
+    # the cursor, then draw each line with `Tj` and drop down with `T*`.
+    body = ["BT", "/F1 12 Tf", "14 TL", "72 740 Td"]
+    for line in lines:
+        body.append(f"({_pdf_escape(line)}) Tj T*")
+    body.append("ET")
+    content = "\n".join(body).encode("ascii")
+
+    objects = [
+        b"<< /Type /Catalog /Pages 2 0 R >>",
+        b"<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
+        b"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] "
+        b"/Resources << /Font << /F1 5 0 R >> >> /Contents 4 0 R >>",
+        b"<< /Length %d >>\nstream\n" % len(content) + content + b"\nendstream",
+        b"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>",
+    ]
+
+    out = bytearray(b"%PDF-1.4\n")
+    offsets = []
+    for i, obj in enumerate(objects, start=1):
+        offsets.append(len(out))
+        out += b"%d 0 obj\n" % i + obj + b"\nendobj\n"
+
+    xref_pos = len(out)
+    out += b"xref\n0 %d\n" % (len(objects) + 1)
+    out += b"0000000000 65535 f \n"
+    for off in offsets:
+        out += b"%010d 00000 n \n" % off
+    out += b"trailer\n<< /Size %d /Root 1 0 R >>\n" % (len(objects) + 1)
+    out += b"startxref\n%d\n%%%%EOF\n" % xref_pos
+
+    with open(path, "wb") as f:
+        f.write(bytes(out))
+
+
 def make_note_wav(path: str, seconds: float = 1.0, freq: float = 440.0) -> None:
     """One second of a 440 Hz sine tone — a stand-in 'voice note' for §5/§6.
 
@@ -203,7 +269,8 @@ def main() -> None:
     make_receipt(os.path.join(HERE, "receipt.png"))
     make_chart(os.path.join(HERE, "chart.png"))
     make_note_wav(os.path.join(HERE, "note.wav"))
-    for name in ("receipt.png", "chart.png", "note.wav"):
+    make_invoice_pdf(os.path.join(HERE, "invoice.pdf"))
+    for name in ("receipt.png", "chart.png", "note.wav", "invoice.pdf"):
         p = os.path.join(HERE, name)
         print(f"  wrote {name}  ({os.path.getsize(p):,} bytes)")
     print("\nAll assets generated with the standard library — no Pillow, no downloads.")
