@@ -77,7 +77,7 @@ CAPABILITIES = {
     "openai": {"vision": True, "audio (STT/TTS)": True, "image generation": True},
     "claude": {"vision": True, "audio (STT/TTS)": False, "image generation": False},
 }
-ASSETS = ["receipt.png", "chart.png", "note.wav"]
+ASSETS = ["receipt.png", "chart.png", "note.wav", "invoice.pdf"]
 
 
 def check_python():
