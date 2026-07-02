@@ -46,8 +46,8 @@ _KEYS = {"openai": ["OPENAI_API_KEY"], "claude": ["ANTHROPIC_API_KEY"]}
 # Which optional capabilities each provider has. The examples consult this to
 # decide whether to run for real or print an honest "not supported here" note.
 _CAPABILITIES = {
-    "openai": {"vision": True, "stt": True, "tts": True, "image_gen": True},
-    "claude": {"vision": True, "stt": False, "tts": False, "image_gen": False},
+    "openai": {"vision": True, "stt": True, "tts": True, "image_gen": True, "pdf": True},
+    "claude": {"vision": True, "stt": False, "tts": False, "image_gen": False, "pdf": True},
 }
 
 
@@ -153,6 +153,34 @@ def image_block(data: bytes, media_type: str = "image/png") -> dict:
         return {
             "type": "image",
             "source": {"type": "base64", "media_type": media_type, "data": b64},
+        }
+    raise ValueError(f"Unknown PROVIDER={p!r}.")
+
+
+def pdf_block(data: bytes, filename: str = "document.pdf") -> dict:
+    """A NATIVE PDF content block from raw PDF bytes, in the active provider's shape.
+
+    This is the key contrast with §4. There, we turned a document into a picture
+    (a screenshot) and used vision — the workaround. A native PDF block hands the
+    model the *document itself*: it reads the real text, keeps page structure, and
+    handles many pages at once. It's the input enterprise document pipelines
+    actually use.
+
+    Both providers take base64-encoded PDF bytes and, again, only the envelope
+    differs. OpenAI passes a `file` part with a `data:` URI (like an image URL);
+    Claude uses a `document` block with a typed `source`. The PDF rides in the
+    *same user turn* as your question — a document is just another slot."""
+    b64 = base64.standard_b64encode(data).decode("ascii")
+    p = provider_name()
+    if p == "openai":
+        return {
+            "type": "file",
+            "file": {"filename": filename, "file_data": f"data:application/pdf;base64,{b64}"},
+        }
+    if p == "claude":
+        return {
+            "type": "document",
+            "source": {"type": "base64", "media_type": "application/pdf", "data": b64},
         }
     raise ValueError(f"Unknown PROVIDER={p!r}.")
 
