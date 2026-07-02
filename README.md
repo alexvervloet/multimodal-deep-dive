@@ -255,6 +255,32 @@ teaching approximations; for billing, trust the `usage` field in the real respon
 
 ---
 
+## 11. Native PDF — hand the model the document, not a screenshot
+
+Section 4 extracted a document by turning it into a *picture* and using vision.
+That's the workaround everyone starts with — and it throws away the real text, the
+page structure, and struggles past one page. The tool enterprise document
+pipelines actually reach for is **native PDF input**: pass the PDF bytes as their
+own content block and the model reads the document itself.
+
+```bash
+python examples/10_native_pdf.py
+python examples/10_native_pdf.py path/to/your.pdf
+```
+
+It's the same one big idea — the right modality in the right slot. A PDF is just
+another slot: `providers.pdf_block(bytes)` rides in the same user turn as your
+question, exactly like an image block, and only the envelope differs per provider
+(OpenAI a `file` part, Claude a `document` block). The example runs the *same*
+JSON-extraction discipline as §4, but over the bundled `invoice.pdf` — a real
+document, not a screenshot of one — and `json.loads` the reply to prove it's
+machine-usable. Native PDF is the default for document work; the §4 screenshot
+route is the fallback for a model that can't take a PDF, not the other way around.
+(Native PDF support is model-specific — the example degrades cleanly if the active
+model refuses it.)
+
+---
+
 ## The capstone: `extract.py`
 
 Everything assembled into a CLI you can actually use: it takes an image of a
@@ -315,8 +341,10 @@ on vibes; pick it on which slots your app fills.
 You've fed a model every modality it accepts. The frontier is more of the same idea,
 with more fidelity and more modalities:
 
-- **Real-time / streaming audio** — speech-to-speech APIs that skip the
-  transcribe→text→synthesize round-trip for low-latency voice agents.
+- **Real-time / streaming audio** — low-latency voice agents: turn detection,
+  interruption (barge-in), and speech-to-speech vs the transcribe→LLM→synthesize
+  pipeline. The **[Realtime Voice dive](https://github.com/Ailuue/realtime-voice-deep-dive)**
+  builds a from-scratch simulator of exactly this.
 - **Video** — sampling frames as images (it's multi-image RAG over time) or true
   native video inputs as they roll out.
 - **True image embeddings** — embedding pictures directly (CLIP-style) instead of
@@ -324,8 +352,9 @@ with more fidelity and more modalities:
 - **Structured outputs / JSON mode** — provider features that *guarantee* valid JSON
   from a vision call, replacing the fence-stripping in Section 4.
 - **Image editing & inpainting** — masks and reference images, not just text→image.
-- **PDF and document inputs** — handing whole documents (not just screenshots of
-  them) to models that accept native PDF.
+- **Multi-page & scanned PDFs** — §11 does native PDF input on a one-page invoice;
+  real pipelines handle long, multi-page, and scanned documents (where you may still
+  fall back to page-image vision), plus citations back to the source page.
 - **Higher-resolution vision** — newer models accept larger images at pixel-accurate
   coordinates; great for computer-use and dense screenshots, at higher token cost.
 
@@ -374,6 +403,7 @@ assets/                     ← tiny, self-made sample media (no downloads)
   receipt.png               ← a "receipt" for the extraction demo
   chart.png                 ← a bar chart for the multi-image demo
   note.wav                  ← a 1-second tone — a stand-in audio clip
+  invoice.pdf               ← a one-page invoice PDF for the native-PDF demo
 hands_on/
   extract.py                ← capstone: screenshot -> JSON CLI (+ token cost, + voice)
 examples/
@@ -386,6 +416,7 @@ examples/
   07_image_generation.py    ← text -> image (OpenAI; claude can't generate images)
   08_multimodal_rag.py      ← caption-then-embed RAG over images (both providers)
   09_image_token_math.py    ← how images become tokens (offline, no key)
+  10_native_pdf.py          ← native PDF input: extract an invoice PDF to JSON (both providers)
 ```
 
 (`out/` is created by the image-generation and text-to-speech examples and is
@@ -439,6 +470,8 @@ any order; this sequence builds naturally:
 - [Fine-tuning](https://github.com/Ailuue/fine-tuning-deep-dive) — teach a model new behavior by example
 - [MCP](https://github.com/Ailuue/mcp-deep-dive) — serve tools, data & prompts to any LLM over a standard protocol
 - [Local Models](https://github.com/Ailuue/local-models-deep-dive) — run open-weight models on your own machine
+- [Agent Harnesses](https://github.com/Ailuue/agent-harness-deep-dive) — build on the loop: hooks, permissions, sandboxing, subagents
+- [Realtime Voice](https://github.com/Ailuue/realtime-voice-deep-dive) — low-latency speech-to-speech agents
 
 **Multimodal is a bonus dive in the series** — it slots most naturally after the two
 API dives (#1–2) and pairs with RAG (#4), whose retrieval ideas Section 9 extends to
