@@ -24,6 +24,7 @@ _MEDIA_TYPES = {
     ".webp": "image/webp",
     ".wav": "audio/wav",
     ".mp3": "audio/mpeg",
+    ".pdf": "application/pdf",
 }
 
 
