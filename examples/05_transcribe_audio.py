@@ -19,8 +19,8 @@ Point it at a real voice recording to see real text.
 
 Run it:
 
-    python examples/05_transcribe_audio.py
-    python examples/05_transcribe_audio.py path/to/your/voice.mp3
+    secrun python examples/05_transcribe_audio.py
+    secrun python examples/05_transcribe_audio.py path/to/your/voice.mp3
 """
 
 import os
