@@ -13,7 +13,7 @@ machine-usable data, not prose.
 
 Run it:
 
-    python examples/03_structured_extraction.py
+    secrun python examples/03_structured_extraction.py
 """
 
 import json
