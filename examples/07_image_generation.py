@@ -16,8 +16,8 @@ We save the generated PNG to out/generated.png (git-ignored).
 
 Run it:
 
-    python examples/07_image_generation.py
-    python examples/07_image_generation.py "a watercolor fox reading a book"
+    secrun python examples/07_image_generation.py
+    secrun python examples/07_image_generation.py "a watercolor fox reading a book"
 """
 
 import os
