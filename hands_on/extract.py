@@ -15,19 +15,19 @@ the extraction, tokens.estimate for the cost, providers.speak for the voice.
 Examples:
 
     # Extract a receipt to JSON (default schema):
-    python hands_on/extract.py assets/receipt.png
+    secrun python hands_on/extract.py assets/receipt.png
 
     # See the token cost first, and pretty-print:
-    python hands_on/extract.py assets/receipt.png --token-cost
+    secrun python hands_on/extract.py assets/receipt.png --token-cost
 
     # Describe your own schema in plain English:
-    python hands_on/extract.py assets/chart.png --schema "a list of bars, each with its height as a number"
+    secrun python hands_on/extract.py assets/chart.png --schema "a list of bars, each with its height as a number"
 
     # Speak a one-line summary of the result aloud (OpenAI only):
-    python hands_on/extract.py assets/receipt.png --voice
+    secrun python hands_on/extract.py assets/receipt.png --voice
 
     # Save the JSON to a file:
-    python hands_on/extract.py assets/receipt.png -o out/receipt.json
+    secrun python hands_on/extract.py assets/receipt.png -o out/receipt.json
 """
 
 import argparse
