@@ -19,8 +19,8 @@ a tiny bag-of-words cosine — not a real embedding model, but enough to show th
 
 Run it:
 
-    python examples/08_multimodal_rag.py
-    python examples/08_multimodal_rag.py "which image has prices on it?"
+    secrun python examples/08_multimodal_rag.py
+    secrun python examples/08_multimodal_rag.py "which image has prices on it?"
 """
 
 import math
