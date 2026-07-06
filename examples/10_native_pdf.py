@@ -20,7 +20,7 @@ exits cleanly.
 
 Run it:
 
-    python examples/10_native_pdf.py
+    secrun python examples/10_native_pdf.py
 """
 
 import json
