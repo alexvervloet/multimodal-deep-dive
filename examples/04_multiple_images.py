@@ -15,7 +15,7 @@ Vision works on both providers, so this runs either way.
 
 Run it:
 
-    python examples/04_multiple_images.py
+    secrun python examples/04_multiple_images.py
 """
 
 import os
