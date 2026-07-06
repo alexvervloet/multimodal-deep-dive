@@ -14,8 +14,8 @@ this script — open the file in any audio player to hear it.
 
 Run it:
 
-    python examples/06_text_to_speech.py
-    python examples/06_text_to_speech.py "Hello from the multimodal deep dive."
+    secrun python examples/06_text_to_speech.py
+    secrun python examples/06_text_to_speech.py "Hello from the multimodal deep dive."
 """
 
 import os
