@@ -12,8 +12,8 @@ question, get a description back.
 
 Run it:
 
-    python examples/02_vision_describe.py
-    python examples/02_vision_describe.py assets/chart.png "How many bars are there?"
+    secrun python examples/02_vision_describe.py
+    secrun python examples/02_vision_describe.py assets/chart.png "How many bars are there?"
 """
 
 import os
