@@ -227,7 +227,7 @@ Claude, from the same base64 bytes. Your example code never has to care which.
 
 ## Capstone — `extract.py`
 
-**Do.** Run `python hands_on/extract.py assets/receipt.png --token-cost`. You've
+**Do.** Run `secrun python hands_on/extract.py assets/receipt.png --token-cost`. You've
 now combined three things in one command: the offline token estimate, the vision
 call, and JSON extraction. Then add `--voice` (on `openai`) to hear the result —
 and on `claude`, watch it skip the audio gracefully.
