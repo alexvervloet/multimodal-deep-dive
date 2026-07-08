@@ -2,7 +2,7 @@
 Setup check — run this first.
 =============================
 
-    python check_setup.py
+    secrun python check_setup.py
 
 Checks your Python version, the installed packages, your chosen PROVIDER, the API
 key that provider needs, and that the sample assets are present — and tells you
@@ -60,7 +60,7 @@ def _get(env, name):
 
 
 ALWAYS = [
-    ("dotenv", "python-dotenv", "loads your key from .env"),
+    ("dotenv", "python-dotenv", "loads PROVIDER/config from .env"),
     ("rich", "rich", "tables and output in the examples and capstone"),
 ]
 PROVIDER_DEPS = {
@@ -128,8 +128,8 @@ def check_keys(env, provider):
     for name, prefix, placeholder in PROVIDER_KEYS.get(provider, []):
         value = _get(env, name)
         if not value or value == placeholder:
-            fail(f"{name} is not set (still the placeholder).")
-            print("    Open .env and paste your real key.")
+            fail(f"{name} is not set.")
+            print("    Store it in your OS keychain and run `secrun python check_setup.py` — see SECRETS.md.")
             all_ok = False
         elif not value.startswith(prefix):
             warn(f"{name} is set but doesn't start with '{prefix}'. Double-check it.")
