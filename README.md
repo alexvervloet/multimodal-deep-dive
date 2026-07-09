@@ -10,9 +10,9 @@ modality rides into the model's context.
 
 This repo is **standalone**: it teaches everything it needs on its own. It builds
 naturally on ideas from the sibling repos — the API calls
-([OpenAI](https://github.com/Ailuue/openai-api-deep-dive),
-[Claude](https://github.com/Ailuue/claude-api-deep-dive)), and especially
-[RAG](https://github.com/Ailuue/rag-deep-dive) (Section 9 is RAG over images) —
+([OpenAI](https://github.com/alexvervloet/openai-api-deep-dive),
+[Claude](https://github.com/alexvervloet/claude-api-deep-dive)), and especially
+[RAG](https://github.com/alexvervloet/rag-deep-dive) (Section 9 is RAG over images) —
 but its code depends on none of them.
 
 Like its siblings, it's meant to be *walked through*. Each section ends with
@@ -47,12 +47,13 @@ source .venv/bin/activate          # Windows: .venv\Scripts\activate
 # 2. Install dependencies
 pip install -r requirements.txt
 
-# 3. Choose your provider and add your key
+# 3. Choose your provider (set PROVIDER in .env); your key loads separately
 cp .env.example .env
-#    ...then open .env. Set PROVIDER to "openai" or "claude" and paste the key.
+#    Your API key does NOT go in .env. Store it in your OS keychain and run
+#    lessons with `secrun` — 2-minute setup in ../SECRETS.md.
 
 # 4. Confirm everything is wired up (makes no API call, costs nothing)
-python check_setup.py
+secrun python check_setup.py       # secrun injects your key so the check can see it
 ```
 
 Unlike the other repos in this series, the providers here genuinely differ in
@@ -102,8 +103,8 @@ Swap the mock for a real model and the same content-block list now gets a real
 description back. Vision works on **both** providers, so this runs either way.
 
 ```bash
-python examples/02_vision_describe.py
-python examples/02_vision_describe.py assets/chart.png "How many bars are there?"
+secrun python examples/02_vision_describe.py
+secrun python examples/02_vision_describe.py assets/chart.png "How many bars are there?"
 ```
 
 This is the "hello world" of multimodality: hand the model a picture and a
@@ -120,7 +121,7 @@ business multimodality is turning a picture of a document — a receipt, invoice
 form, or screenshot — into clean JSON your code can use.
 
 ```bash
-python examples/03_structured_extraction.py
+secrun python examples/03_structured_extraction.py
 ```
 
 The technique is pure prompting: send the image, and in the system prompt demand a
@@ -139,7 +140,7 @@ message and ask the model to relate them — "what changed?", "do these match?".
 content-block list just gets longer.
 
 ```bash
-python examples/04_multiple_images.py
+secrun python examples/04_multiple_images.py
 ```
 
 The example sends the receipt **and** the bar chart in one turn and asks the model
@@ -157,8 +158,8 @@ A new modality, a new slot. Audio doesn't go in a chat content block — it goes
 back text, which can then flow into any text or vision prompt.
 
 ```bash
-python examples/05_transcribe_audio.py
-python examples/05_transcribe_audio.py path/to/your/voice.mp3
+secrun python examples/05_transcribe_audio.py
+secrun python examples/05_transcribe_audio.py path/to/your/voice.mp3
 ```
 
 > ⚠️ **OpenAI-only.** Claude has no native audio API. With `PROVIDER=claude` this
@@ -176,8 +177,8 @@ The mirror image of Section 6: text in → audio out. Hand the TTS endpoint a st
 and a voice; get back audio bytes you save and play.
 
 ```bash
-python examples/06_text_to_speech.py
-python examples/06_text_to_speech.py "Hello from the multimodal deep dive."
+secrun python examples/06_text_to_speech.py
+secrun python examples/06_text_to_speech.py "Hello from the multimodal deep dive."
 ```
 
 > ⚠️ **OpenAI-only**, like transcription. Claude has no TTS API; the example skips
@@ -195,8 +196,8 @@ So far every example put an image *into* the model. This one gets an image *out*
 text prompt becomes a brand-new picture (`gpt-image-1`).
 
 ```bash
-python examples/07_image_generation.py
-python examples/07_image_generation.py "a watercolor fox reading a book"
+secrun python examples/07_image_generation.py
+secrun python examples/07_image_generation.py "a watercolor fox reading a book"
 ```
 
 > ⚠️ **OpenAI-only — and this is the biggest capability gap in the repo. Claude
@@ -213,14 +214,14 @@ around what your app actually needs.
 
 ## 9. Multimodal RAG — retrieve over images + text
 
-RAG (from the [RAG deep dive](https://github.com/Ailuue/rag-deep-dive)) puts the
+RAG (from the [RAG deep dive](https://github.com/alexvervloet/rag-deep-dive)) puts the
 right *text* in the model's context. But what if your knowledge base is **images** —
 screenshots, scanned pages, photos? You can't embed a picture with a text embedder.
 The most practical pattern is **caption-then-embed**:
 
 ```bash
-python examples/08_multimodal_rag.py
-python examples/08_multimodal_rag.py "which image has prices on it?"
+secrun python examples/08_multimodal_rag.py
+secrun python examples/08_multimodal_rag.py "which image has prices on it?"
 ```
 
 1. **Caption** each image with a vision model (image → a sentence).  *[vision]*
@@ -264,8 +265,8 @@ pipelines actually reach for is **native PDF input**: pass the PDF bytes as thei
 own content block and the model reads the document itself.
 
 ```bash
-python examples/10_native_pdf.py
-python examples/10_native_pdf.py path/to/your.pdf
+secrun python examples/10_native_pdf.py
+secrun python examples/10_native_pdf.py path/to/your.pdf
 ```
 
 It's the same one big idea — the right modality in the right slot. A PDF is just
@@ -290,19 +291,19 @@ described by you in plain English. It can print the image's token cost *first*
 
 ```bash
 # Extract a receipt to JSON (default schema):
-python hands_on/extract.py assets/receipt.png
+secrun python hands_on/extract.py assets/receipt.png
 
 # See the token cost before sending, and pretty-print:
-python hands_on/extract.py assets/receipt.png --token-cost
+secrun python hands_on/extract.py assets/receipt.png --token-cost
 
 # Describe your own schema in plain English:
-python hands_on/extract.py assets/chart.png --schema "a list of bars, each with a height number"
+secrun python hands_on/extract.py assets/chart.png --schema "a list of bars, each with a height number"
 
 # Speak a summary aloud (OpenAI only; skips gracefully on claude):
-python hands_on/extract.py assets/receipt.png --voice
+secrun python hands_on/extract.py assets/receipt.png --voice
 
 # Save the JSON to a file:
-python hands_on/extract.py assets/receipt.png -o out/receipt.json
+secrun python hands_on/extract.py assets/receipt.png -o out/receipt.json
 ```
 
 Read [hands_on/extract.py](hands_on/extract.py) — it's just the library
@@ -343,7 +344,7 @@ with more fidelity and more modalities:
 
 - **Real-time / streaming audio** — low-latency voice agents: turn detection,
   interruption (barge-in), and speech-to-speech vs the transcribe→LLM→synthesize
-  pipeline. The **[Realtime Voice dive](https://github.com/Ailuue/realtime-voice-deep-dive)**
+  pipeline. The **[Realtime Voice dive](https://github.com/alexvervloet/realtime-voice-deep-dive)**
   builds a from-scratch simulator of exactly this.
 - **Video** — sampling frames as images (it's multi-image RAG over time) or true
   native video inputs as they roll out.
@@ -382,7 +383,7 @@ which modality, and the same for any LLM app:
 These shortcuts are right for learning and wrong for production. The general ops
 machinery — observability, cost, reliability, caching, guardrails, prompt
 versioning, eval gates — is built from scratch and wired into one running app in
-**[Production](https://github.com/Ailuue/ai-in-production-deep-dive)** (#8 in the
+**[Production](https://github.com/alexvervloet/ai-in-production-deep-dive)** (#8 in the
 series). It runs **offline on a mock provider**, so you can see the whole ops
 machinery with no key and no cost.
 
@@ -426,11 +427,11 @@ git-ignored.)
 
 ## Troubleshooting
 
-Run `python check_setup.py` first — it catches most problems. Then, by symptom:
+Run `secrun python check_setup.py` first — it catches most problems. Then, by symptom:
 
 | What you see | What it means / the fix |
 |--------------|-------------------------|
-| `PROVIDER=... needs ... in .env` | The active stack is missing its key. Set `PROVIDER` and the matching key in `.env`. |
+| `PROVIDER=... needs ... in the environment` | Set `PROVIDER` in `.env`, then load the key from your keychain by running under `secrun` — see [SECRETS.md](../SECRETS.md). |
 | `PROVIDER=claude has no speech-to-text / text-to-speech API` | Working as intended — Claude has no native audio. Use `PROVIDER=openai` for audio, or run the vision examples on `claude`. |
 | `PROVIDER=claude cannot generate images` | Working as intended — Claude is vision-in only. Use `PROVIDER=openai` for image generation. |
 | `ModuleNotFoundError` (openai / anthropic / rich) | Dependencies aren't installed or the venv isn't active. `source .venv/bin/activate` then `pip install -r requirements.txt`. |
@@ -448,30 +449,31 @@ is the whole story.
 
 ## The series
 
-This is one of thirteen standalone, hands-on deep dives into building with LLM APIs — eight core, plus five bonus dives.
+This is one of sixteen standalone, hands-on deep dives into building with LLM APIs — eight core, plus eight bonus dives.
 Each one stands on its own — its own setup, examples, and capstone — and they all
 share the same house style: provider-agnostic where it makes sense, built from
 scratch (no frameworks), offline-first examples, and a real capstone. Do them in
 any order; this sequence builds naturally:
 
-1. [OpenAI API](https://github.com/Ailuue/openai-api-deep-dive) — the API from zero
-2. [Claude API](https://github.com/Ailuue/claude-api-deep-dive) — the same ideas, the Anthropic way
-3. [Prompt Engineering](https://github.com/Ailuue/prompt-engineering-deep-dive) — shape model behavior with better prompts (zero/few-shot, chain-of-thought, roles)
-4. [RAG](https://github.com/Ailuue/rag-deep-dive) — answer questions over your own documents
-5. [Evals](https://github.com/Ailuue/evals-deep-dive) — measure whether a change actually helps
-6. [Agents](https://github.com/Ailuue/agents-deep-dive) — give a model tools and a loop so it can act
-7. [Prompt Injection & Guardrails](https://github.com/Ailuue/prompt-injection-deep-dive) — attack and defend all of the above
-8. [Production](https://github.com/Ailuue/ai-in-production-deep-dive) — operate one app end to end: observability, cost, reliability, caching, guardrails, prompt versioning, eval gates
+1. [OpenAI API](https://github.com/alexvervloet/openai-api-deep-dive) — the API from zero
+2. [Claude API](https://github.com/alexvervloet/claude-api-deep-dive) — the same ideas, the Anthropic way
+3. [Prompt Engineering](https://github.com/alexvervloet/prompt-engineering-deep-dive) — shape model behavior with better prompts (zero/few-shot, chain-of-thought, roles)
+4. [RAG](https://github.com/alexvervloet/rag-deep-dive) — answer questions over your own documents
+5. [Evals](https://github.com/alexvervloet/evals-deep-dive) — measure whether a change actually helps
+6. [Agents](https://github.com/alexvervloet/agents-deep-dive) — give a model tools and a loop so it can act
+7. [Prompt Injection & Guardrails](https://github.com/alexvervloet/prompt-injection-deep-dive) — attack and defend all of the above
+8. [Production](https://github.com/alexvervloet/ai-in-production-deep-dive) — operate one app end to end: observability, cost, reliability, caching, guardrails, prompt versioning, eval gates
 
 **Bonus dives** — standalone, slotting in where they're most useful:
 
-- [Context Engineering](https://github.com/Ailuue/context-engineering-deep-dive) — manage what's in the window: memory, compaction, assembly
-- [Multimodal](https://github.com/Ailuue/multimodal-deep-dive) — images & audio, not just text
-- [Fine-tuning](https://github.com/Ailuue/fine-tuning-deep-dive) — teach a model new behavior by example
-- [MCP](https://github.com/Ailuue/mcp-deep-dive) — serve tools, data & prompts to any LLM over a standard protocol
-- [Local Models](https://github.com/Ailuue/local-models-deep-dive) — run open-weight models on your own machine
-- [Agent Harnesses](https://github.com/Ailuue/agent-harness-deep-dive) — build on the loop: hooks, permissions, sandboxing, subagents
-- [Realtime Voice](https://github.com/Ailuue/realtime-voice-deep-dive) — low-latency speech-to-speech agents
+- [Context Engineering](https://github.com/alexvervloet/context-engineering-deep-dive) — manage what's in the window: memory, compaction, assembly
+- [Multimodal](https://github.com/alexvervloet/multimodal-deep-dive) — images & audio, not just text
+- [Fine-tuning](https://github.com/alexvervloet/fine-tuning-deep-dive) — teach a model new behavior by example
+- [MCP](https://github.com/alexvervloet/mcp-deep-dive) — serve tools, data & prompts to any LLM over a standard protocol
+- [Local Models](https://github.com/alexvervloet/local-models-deep-dive) — run open-weight models on your own machine
+- [Agent Harnesses](https://github.com/alexvervloet/agent-harness-deep-dive) — build on the loop: hooks, permissions, sandboxing, subagents
+- [Realtime Voice](https://github.com/alexvervloet/realtime-voice-deep-dive) — low-latency speech-to-speech agents
+- [Observability](https://github.com/alexvervloet/observability-deep-dive) — watch a running app over time: drift, quality, alerting, the flywheel
 
 **Multimodal is a bonus dive in the series** — it slots most naturally after the two
 API dives (#1–2) and pairs with RAG (#4), whose retrieval ideas Section 9 extends to
