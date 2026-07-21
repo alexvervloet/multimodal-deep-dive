@@ -1,12 +1,11 @@
 """
-Capstone — `extract.py`: a screenshot -> structured-data CLI (with a voice mode).
-=================================================================================
+Capstone: `extract.py`: a screenshot -> structured-data CLI (with a voice mode).
 
 Everything in the repo, assembled into one tool you can actually use. It takes an
 image of a document and returns clean JSON, choosing the schema from a small
 built-in set or following one you describe. It also has an optional --voice mode
 that speaks the result aloud (OpenAI only) and a --token-cost flag that prints the
-image's estimated token cost (offline) before sending — so you see what you're
+image's estimated token cost (offline) before sending, so you see what you're
 about to spend.
 
 It's just the library wired to a CLI: providers.image_block + providers.chat for
@@ -155,7 +154,7 @@ def main() -> None:
             os.makedirs(out_dir, exist_ok=True)
             voice_path = os.path.join(out_dir, "extract_summary.mp3")
             media.save_bytes(voice_path, audio)
-            print(f"\n[--voice] Wrote {os.path.relpath(voice_path, ROOT)} — open it to listen.")
+            print(f"\n[--voice] Wrote {os.path.relpath(voice_path, ROOT)}. Open it to listen.")
 
 
 if __name__ == "__main__":
