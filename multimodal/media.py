@@ -1,10 +1,9 @@
 """
-multimodal/media.py — tiny, dependency-free media helpers.
-==========================================================
+multimodal/media.py: tiny, dependency-free media helpers.
 
 Loading an image or audio file is not the interesting part of multimodal work,
 but every example needs to do it, so the boring bits live here once. There are NO
-third-party dependencies — we read raw bytes and parse PNG/WAV headers by hand,
+third-party dependencies. We read raw bytes and parse PNG/WAV headers by hand,
 so these helpers work even before you `pip install` anything.
 
   load_bytes(path)        -> raw bytes + a guessed media type
@@ -53,7 +52,7 @@ def png_size(data: bytes) -> tuple[int, int]:
 
     A PNG starts with an 8-byte signature, then the IHDR chunk whose first 8
     bytes of data are width and height as big-endian uint32s. We just unpack
-    them — proof that an image's dimensions are right there in the first 24 bytes.
+    them, proof that an image's dimensions are right there in the first 24 bytes.
     """
     if data[:8] != b"\x89PNG\r\n\x1a\n":
         raise ValueError("Not a PNG file.")

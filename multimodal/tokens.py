@@ -1,15 +1,14 @@
 """
-multimodal/tokens.py — how an image becomes tokens (offline, no key).
-=====================================================================
+multimodal/tokens.py: how an image becomes tokens (offline, no key).
 
 The single most surprising thing about multimodal models: an image is not free,
 and it is not one token. It is *tokenized* into a number of tokens that depends on
-its pixel dimensions — and a big screenshot can cost more than a paragraph of
+its pixel dimensions, and a big screenshot can cost more than a paragraph of
 text. This module estimates that cost with pure arithmetic, so you can reason
 about (and budget for) image inputs WITHOUT making an API call.
 
 These are documented, public formulas, but they're approximations and providers
-change them — treat this as a teaching tool, not a billing source of truth. The
+change them, so treat this as a teaching tool, not a billing source of truth. The
 real number always comes back in the API response's usage field.
 
 Two provider models, two different schemes:
@@ -18,7 +17,7 @@ Two provider models, two different schemes:
   fit a budget, then chopped into 512x512 tiles; each tile costs a fixed number
   of tokens, plus one base amount.
 
-  Claude: tokens ≈ (width * height) / 750, capped — a simple area-based rule.
+  Claude: tokens ≈ (width * height) / 750, capped: a simple area-based rule.
 
 The exact constants below match each provider's published guidance at the time of
 writing; the point is the *shape* of the cost, which is stable: tokens scale with

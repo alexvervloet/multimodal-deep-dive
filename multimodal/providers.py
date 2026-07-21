@@ -1,9 +1,8 @@
 """
-multimodal/providers.py — the ONLY provider-specific file.
-==========================================================
+multimodal/providers.py: the ONLY provider-specific file.
 
-Multimodality is mostly an *architecture* question — which modality goes in which
-slot — but unlike the other repos in this series, the providers genuinely differ
+Multimodality is mostly an *architecture* question, which modality goes in which
+slot, but unlike the other repos in this series, the providers genuinely differ
 in *capability*, not just in request shape. That's the honest, load-bearing fact
 of this repo:
 
@@ -17,14 +16,14 @@ of this repo:
 So this file does two things:
 
   1. Normalizes the parts that BOTH providers can do (vision chat) to one
-     interface — `chat()` — that takes a list of content blocks. The only thing
+     interface, `chat()`, that takes a list of content blocks. The only thing
      that differs is the shape of an image block, which `image_block()` builds.
   2. Exposes single-provider features (`transcribe`, `speak`, `generate_image`)
      that raise a clear, friendly error when the active provider can't do them,
      so the examples degrade gracefully instead of crashing.
 
 Model IDs mirror the sibling repos (see rag/providers.py, agent/providers.py):
-OpenAI `gpt-4o-mini`, Claude `claude-haiku-4-5` — the cheap, fast workhorses.
+OpenAI `gpt-4o-mini`, Claude `claude-haiku-4-5`: the cheap, fast workhorses.
 
 Clients are created lazily and cached, so importing this module never forces an
 SDK import or a network call.
@@ -61,7 +60,7 @@ class UnsupportedCapability(RuntimeError):
 
 
 # ---------------------------------------------------------------------------
-# Provider identity & readiness — same pattern as every sibling repo.
+# Provider identity & readiness: same pattern as every sibling repo.
 # ---------------------------------------------------------------------------
 def provider_name() -> str:
     """The active stack: 'openai' (default) or 'claude'. Set via PROVIDER in .env."""
@@ -79,7 +78,7 @@ def supports(capability: str) -> bool:
 
 
 def describe() -> str:
-    """One-line summary of the active stack — handy for examples to print."""
+    """One-line summary of the active stack, handy for examples to print."""
     p = provider_name()
     if p == "openai":
         return f"openai  (chat={_OPENAI_CHAT}, stt={_OPENAI_STT}, tts={_OPENAI_TTS}, image={_OPENAI_IMAGE})"
@@ -124,7 +123,7 @@ def _anthropic_client():
 
 
 # ---------------------------------------------------------------------------
-# Content blocks — the heart of "put the right modality in the right slot."
+# Content blocks: the heart of "put the right modality in the right slot."
 #
 # A multimodal message is not a string; it's a LIST of typed blocks. A text
 # block and an image block sit side by side in one user turn. The two providers
@@ -132,7 +131,7 @@ def _anthropic_client():
 # have to care which provider is active.
 # ---------------------------------------------------------------------------
 def text_block(text: str) -> dict:
-    """A text content block — identical shape on both providers."""
+    """A text content block, identical shape on both providers."""
     return {"type": "text", "text": text}
 
 
@@ -161,7 +160,7 @@ def pdf_block(data: bytes, filename: str = "document.pdf") -> dict:
     """A NATIVE PDF content block from raw PDF bytes, in the active provider's shape.
 
     This is the key contrast with §4. There, we turned a document into a picture
-    (a screenshot) and used vision — the workaround. A native PDF block hands the
+    (a screenshot) and used vision: the workaround. A native PDF block hands the
     model the *document itself*: it reads the real text, keeps page structure, and
     handles many pages at once. It's the input enterprise document pipelines
     actually use.
@@ -169,7 +168,7 @@ def pdf_block(data: bytes, filename: str = "document.pdf") -> dict:
     Both providers take base64-encoded PDF bytes and, again, only the envelope
     differs. OpenAI passes a `file` part with a `data:` URI (like an image URL);
     Claude uses a `document` block with a typed `source`. The PDF rides in the
-    *same user turn* as your question — a document is just another slot."""
+    *same user turn* as your question; a document is just another slot."""
     b64 = base64.standard_b64encode(data).decode("ascii")
     p = provider_name()
     if p == "openai":
@@ -191,7 +190,7 @@ def chat(system: str, content_blocks: list[dict], max_tokens: int = 1024) -> str
     `content_blocks` is a mix of `text_block(...)` and `image_block(...)`. This is
     the one call both providers share. The shape difference is only in *where* the
     system prompt goes (OpenAI: a message; Claude: a top-level `system=`) and how
-    the reply is unpacked — both normalized to a plain string here.
+    the reply is unpacked, both normalized to a plain string here.
 
     Requires the `vision` capability (both providers have it)."""
     p = provider_name()
@@ -219,7 +218,7 @@ def chat(system: str, content_blocks: list[dict], max_tokens: int = 1024) -> str
 # ---------------------------------------------------------------------------
 # Single-provider capabilities. Each one checks `supports(...)` first and raises
 # a clear UnsupportedCapability if the active provider can't do it. The examples
-# catch that and print an honest note — no crashes, no pretending.
+# catch that and print an honest note: no crashes, no pretending.
 # ---------------------------------------------------------------------------
 def transcribe(audio_bytes: bytes, filename: str = "audio.wav") -> str:
     """Speech-to-text. OpenAI only (Whisper). Claude has no native audio API."""
@@ -251,7 +250,7 @@ def speak(text: str, voice: str = "alloy") -> bytes:
 
 def generate_image(prompt: str, size: str = "1024x1024") -> bytes:
     """Text-to-image -> PNG bytes. OpenAI only (gpt-image-1). Claude can't generate
-    images — it's vision-in only."""
+    images; it's vision-in only."""
     if not supports("image_gen"):
         raise UnsupportedCapability(
             f"PROVIDER={provider_name()} cannot generate images (it's vision-in only). "
