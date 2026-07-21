@@ -1,20 +1,19 @@
 """
-Example 08 — multimodal RAG: retrieve over images + text.
-=========================================================
+Example 08: multimodal RAG: retrieve over images + text.
 
 RAG (from the RAG deep dive) puts the right text in the model's context. But what
-if your knowledge base is IMAGES — screenshots, scanned pages, photos? You can't
+if your knowledge base is IMAGES: screenshots, scanned pages, photos? You can't
 embed a picture with a text embedder. The most practical pattern is
 **caption-then-embed**:
 
   1. Caption each image with a vision model (image -> a sentence of text).   [vision]
   2. Index those captions like any other text.                              [retrieval]
   3. At query time, retrieve the best-matching caption, then ANSWER from the
-     original image — feeding the actual picture back to the model.          [vision]
+     original image, feeding the actual picture back to the model.         [vision]
 
 So vision bookends a text-retrieval core. Vision works on both providers, so this
 runs either way. To stay from-scratch and dependency-free, the "embedding" here is
-a tiny bag-of-words cosine — not a real embedding model, but enough to show the
+a tiny bag-of-words cosine: not a real embedding model, but enough to show the
 *architecture*. (Swap in real embeddings from the RAG dive for production.)
 
 Run it:
@@ -40,7 +39,7 @@ load_dotenv()
 providers.ensure_ready()
 print(f"Provider: {providers.describe()}\n")
 
-# Our tiny image "corpus" — the two assets we ship.
+# Our tiny image "corpus": the two assets we ship.
 CORPUS = ["receipt.png", "chart.png"]
 
 
@@ -88,7 +87,7 @@ ranked = sorted(index, key=lambda row: cosine(qvec, row[2]), reverse=True)
 best_name, best_caption, _, best_data, best_type = ranked[0]
 print(f"Retrieved: {best_name}  (caption: {best_caption})\n")
 
-# Now answer GROUNDED in the actual image, not just its caption — the caption got
+# Now answer GROUNDED in the actual image, not just its caption: the caption got
 # us to the right picture; the picture has the detail.
 answer = providers.chat(
     system="Answer the user's question using ONLY the provided image. "
@@ -105,5 +104,5 @@ print(answer)
 print(
     "\nThat's multimodal RAG in miniature: vision to caption, text retrieval to "
     "find, vision again to answer. Production swaps the bag-of-words for real "
-    "embeddings (or true image embeddings) — the architecture is identical."
+    "embeddings (or true image embeddings); the architecture is identical."
 )

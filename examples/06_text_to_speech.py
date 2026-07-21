@@ -1,16 +1,15 @@
 """
-Example 06 — audio OUT: text-to-speech.
-=======================================
+Example 06: audio OUT: text-to-speech.
 
 The mirror image of example 05. Instead of audio in -> text out, this is text in
 -> audio out. You hand the TTS endpoint a string and a voice; you get back audio
 bytes you can save and play.
 
-  ⚠️  PROVIDER SUPPORT: OpenAI-only, like transcription. Claude has no TTS API.
+  PROVIDER SUPPORT: OpenAI-only, like transcription. Claude has no TTS API.
       With PROVIDER=claude, this example explains that and exits cleanly.
 
 We write the result to out/spoken.mp3 (git-ignored). There's no playback inside
-this script — open the file in any audio player to hear it.
+this script. Open the file in any audio player to hear it.
 
 Run it:
 
@@ -42,8 +41,8 @@ if not providers.supports("tts"):
     sys.exit(0)
 
 text = sys.argv[1] if len(sys.argv) > 1 else (
-    "Welcome to the multimodal deep dive. A model takes more than text — "
-    "images and audio — and the skill is putting the right modality in the right slot."
+    "Welcome to the multimodal deep dive. A model takes more than text, "
+    "images and audio, and the skill is putting the right modality in the right slot."
 )
 
 print(f"Synthesizing speech for:\n  {text!r}\n")

@@ -1,9 +1,8 @@
 """
-Example 01 — what a multimodal message is (offline, no API call).
-=================================================================
+Example 01: what a multimodal message is (offline, no API call).
 
 Before any provider, understand the shape. A text-only request sends a *string*.
-A multimodal request sends a LIST of typed content blocks — a text block and an
+A multimodal request sends a LIST of typed content blocks: a text block and an
 image block side by side in one user turn:
 
     [ {type: text,  ...},
@@ -12,7 +11,7 @@ image block side by side in one user turn:
 That list IS the "put the right modality in the right slot" idea, literally. This
 example builds that list for the active provider, then hands it to a tiny OFFLINE
 mock "vision model" that answers from the image's pixels (it reads the PNG header
-and counts colors) — no key, no network, no cost. The point is to *see* the
+and counts colors), so no key, no network, no cost. The point is to see the
 request shape and the round-trip before you spend anything.
 
 Run it:
@@ -34,7 +33,7 @@ ASSETS = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))
 def mock_vision(content_blocks: list[dict]) -> str:
     """A deterministic, offline 'vision model'.
 
-    It can't really see, but it CAN inspect the bytes we put in the image block —
+    It can't really see, but it CAN inspect the bytes we put in the image block 
     proving the image actually rode along in the request. It pulls the base64 out
     of whichever provider's block shape we built, decodes it, and reports the
     image's true dimensions plus the text we sent alongside."""
@@ -51,7 +50,7 @@ def mock_vision(content_blocks: list[dict]) -> str:
             image_bytes = base64.b64decode(block["source"]["data"])
 
     if image_bytes is None:
-        return "I received no image — only text."
+        return "I received no image, only text."
     w, h = media.png_size(image_bytes)
     asked = " ".join(text_parts) or "(no question)"
     return (
@@ -62,9 +61,9 @@ def mock_vision(content_blocks: list[dict]) -> str:
 
 
 def main() -> None:
-    # No load_dotenv / ensure_ready — this example is fully offline.
+    # No load_dotenv / ensure_ready; this example is fully offline.
     print(f"Provider shape: {providers.provider_name()} "
-          f"(no key needed — this is the offline mock)\n")
+          f"(no key needed; this is the offline mock)\n")
 
     # 1. Load the image as raw bytes (dependency-free).
     image_data, media_type = media.load_bytes(os.path.join(ASSETS, "receipt.png"))
@@ -77,7 +76,7 @@ def main() -> None:
     ]
 
     # 3. Show the structure the model receives. Notice: the image is base64 in the
-    #    block — we truncate it here just so the print is readable.
+    #    block, truncated here just so the print is readable.
     print("The content blocks the model receives (image data truncated):")
     printable = json.loads(json.dumps(content))  # deep copy
     for block in printable:
@@ -95,7 +94,7 @@ def main() -> None:
 
     print(
         "\nThat list of blocks is the whole idea. Example 02 sends the EXACT same "
-        "shape to a real vision model — just swap the mock for providers.chat()."
+        "shape to a real vision model: just swap the mock for providers.chat()."
     )
 
 

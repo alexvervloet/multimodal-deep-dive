@@ -1,11 +1,10 @@
 """
-Example 09 — the token math of images (offline, no key).
-========================================================
+Example 09: the token math of images (offline, no key).
 
 Images are not free, and they are not one token. A model *tokenizes* an image
 based on its pixel dimensions, and a big screenshot can cost more than a page of
-text. This example computes that cost with pure arithmetic — no API call, no key,
-no cost — so you can budget BEFORE you send.
+text. This example computes that cost with pure arithmetic: no API call, no key,
+no cost, so you can budget BEFORE you send.
 
 It uses the real PNG dimensions of the repo's assets (read straight from the file
 header) and runs them through each provider's documented tokenization scheme:
@@ -13,13 +12,13 @@ header) and runs them through each provider's documented tokenization scheme:
   OpenAI (gpt-4o family): base tokens + 512x512 tiles after a resize.
   Claude: tokens ≈ (width * height) / 750, with a cap.
 
-The two numbers differ — that's expected; the providers tokenize differently. The
+The two numbers differ, which is expected; the providers tokenize differently. The
 stable lesson is the SHAPE of the cost: tokens scale with pixels, so the single
 biggest lever you have is **downscaling the image before you send it**. We prove
 that by also pricing a half-size copy.
 
-  ⚠️  These are teaching approximations. The real token count always comes back
-      in the API response's usage field — trust that for billing.
+  These are teaching approximations. The real token count always comes back
+      in the API response's usage field; trust that for billing.
 
 Run it:
 
@@ -81,7 +80,7 @@ def main() -> None:
         for label, size, o, c in rows():
             print(f"{label:<22}{size:>12}{o:>10}{c:>10}")
 
-    # The downscaling lever, made concrete — use a LARGE image, where it bites.
+    # The downscaling lever, made concrete: use a LARGE image, where it bites.
     # (A tiny image already fits in one tile, so resizing it changes nothing; the
     # lever only matters once an image spans multiple tiles.)
     name, w, h = "a phone screenshot", 1170, 2532
@@ -97,7 +96,7 @@ def main() -> None:
 
     print(
         "\nTakeaways:\n"
-        "  - A big screenshot can cost thousands of tokens — more than a page of text.\n"
+        "  - A big screenshot can cost thousands of tokens, more than a page of text.\n"
         "  - Tokens scale with pixels, so resizing down is your cheapest optimization.\n"
         "  - The two providers tokenize differently; the SHAPE of the cost is the\n"
         "    stable lesson. For billing, trust the usage field in the real response."

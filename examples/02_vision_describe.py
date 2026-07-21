@@ -1,8 +1,7 @@
 """
-Example 02 — describe an image (real vision call).
-==================================================
+Example 02: describe an image (real vision call).
 
-Same content-block shape as example 01 — a text block plus an image block — but
+Same content-block shape as example 01, a text block plus an image block, but
 now it goes to a real vision model (gpt-4o-mini or claude-haiku-4-5). Vision works
 on BOTH providers, so this runs either way; the only difference is the image
 block's shape, which providers.image_block() handles for you.
@@ -55,6 +54,6 @@ print("Model:")
 print(answer)
 
 print(
-    "\nThe image rode in the SAME message as the question — that's the slot. "
+    "\nThe image rode in the SAME message as the question. That's the slot. "
     "Next (example 03), we ask for STRUCTURED data instead of prose."
 )

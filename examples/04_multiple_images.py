@@ -1,15 +1,14 @@
 """
-Example 04 — multiple images & comparison.
-==========================================
+Example 04: multiple images & comparison.
 
 Nothing says a user turn has only one image. You can put SEVERAL image blocks in
-one message and ask the model to compare them — "what changed?", "which is
+one message and ask the model to compare them: "what changed?", "which is
 cheaper?", "do these match?". The content-block list just gets longer.
 
 Here we send the receipt AND the bar chart in the same turn and ask the model to
 relate them. The lesson is that "the right slot" can hold more than one image, and
 the model attends to all of them together. (Note: more images = more image tokens
-— example 09 shows exactly how much.)
+and example 09 shows exactly how much.)
 
 Vision works on both providers, so this runs either way.
 
@@ -39,7 +38,7 @@ chart, chart_type = media.load_bytes(os.path.join(ROOT, "assets", "chart.png"))
 
 # One user turn, THREE blocks: a question and two labeled images. Interleaving a
 # little text before each image ("Image A:", "Image B:") helps the model keep them
-# straight — a small but real prompt-engineering trick for multi-image turns.
+# straight: a small but real prompt-engineering trick for multi-image turns.
 content = [
     providers.text_block(
         "I'm sending two images. Image A is a cafe receipt; Image B is a bar chart. "
@@ -64,5 +63,5 @@ print(answer)
 
 print(
     "\nTwo images, one slot, one answer. The list of blocks is the only thing that "
-    "grew. Sending more images costs more tokens — example 09 does that math."
+    "grew. Sending more images costs more tokens; example 09 does that math."
 )

@@ -1,15 +1,14 @@
 """
-Example 07 — image GENERATION (text -> image).
-==============================================
+Example 07: image GENERATION (text -> image).
 
 So far every example put an image INTO the model. This one gets an image OUT: a
 text prompt becomes a brand-new picture (OpenAI's gpt-image-1).
 
-  ⚠️  PROVIDER SUPPORT: OpenAI-only — and this is the biggest capability gap in
+  PROVIDER SUPPORT: OpenAI-only, and this is the biggest capability gap in
       the whole repo. **Claude does NOT generate images.** Claude is vision-IN
       only: it can describe, compare, and extract from images you give it, but it
       cannot create one. With PROVIDER=claude this example explains that and exits
-      cleanly. Don't go looking for an Anthropic image-generation endpoint — there
+      cleanly. Don't go looking for an Anthropic image-generation endpoint; there
       isn't one.
 
 We save the generated PNG to out/generated.png (git-ignored).
@@ -38,7 +37,7 @@ print(f"Provider: {providers.describe()}\n")
 if not providers.supports("image_gen"):
     print(
         f"PROVIDER={providers.provider_name()} cannot generate images.\n"
-        f"Claude is vision-IN only — it has no image-generation endpoint at all.\n"
+        f"Claude is vision-IN only and has no image-generation endpoint at all.\n"
         f"To run this example, set PROVIDER=openai in .env (gpt-image-1).\n"
         f"Skipping the call; nothing went wrong."
     )
@@ -50,7 +49,7 @@ prompt = sys.argv[1] if len(sys.argv) > 1 else (
 )
 
 print(f"Generating an image for:\n  {prompt!r}\n")
-print("(This is the slowest and most expensive call in the repo — one image.)")
+print("(This is the slowest and most expensive call in the repo: one image.)")
 
 png_bytes = providers.generate_image(prompt, size="1024x1024")
 

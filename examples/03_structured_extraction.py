@@ -1,10 +1,9 @@
 """
-Example 03 — extract STRUCTURED data from an image (receipt -> JSON).
-=====================================================================
+Example 03: extract STRUCTURED data from an image (receipt -> JSON).
 
 Describing an image is nice; extracting it is useful. The real workhorse of
-business multimodality is turning a picture of a document — a receipt, an
-invoice, a form, a screenshot — into clean JSON your code can use.
+business multimodality is turning a picture of a document (a receipt, an
+invoice, a form, a screenshot) into clean JSON your code can use.
 
 The technique is just prompting: send the image, and in the system prompt demand
 a specific JSON shape and "return ONLY JSON." Vision works on both providers, so
@@ -33,7 +32,7 @@ providers.ensure_ready()
 print(f"Provider: {providers.describe()}\n")
 
 # The schema we want back. Spelling it out in the prompt is what makes extraction
-# reliable — the model fills these fields rather than free-styling.
+# reliable: the model fills these fields rather than free-styling.
 SYSTEM = """You extract structured data from images of receipts.
 Return ONLY a JSON object, no markdown, no prose, with exactly this shape:
 {
@@ -58,7 +57,7 @@ raw = providers.chat(SYSTEM, content)
 print("Raw model output:")
 print(raw)
 
-# Models sometimes wrap JSON in ```json fences despite instructions — strip them.
+# Models sometimes wrap JSON in ```json fences despite instructions: strip them.
 cleaned = raw.strip()
 if cleaned.startswith("```"):
     cleaned = cleaned.split("```", 2)[1]
@@ -73,7 +72,7 @@ try:
     # Prove it's usable: do arithmetic the model never saw as a number.
     if isinstance(data.get("items"), list):
         n = len(data["items"])
-        print(f"\nYour code can now use it directly — e.g. {n} line item(s) found.")
+        print(f"\nYour code can now use it directly: e.g. {n} line item(s) found.")
 except json.JSONDecodeError as e:
     print(f"Could not parse JSON ({e}). Tighten the prompt or try a stronger model.")
 
