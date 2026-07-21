@@ -9,15 +9,15 @@ rich>=13.0.0
 # light, and installing both lets you switch stacks with one env-var change.
 #
 # NOTE on capabilities: vision (image input) works on BOTH providers. Audio
-# (speech-to-text, text-to-speech) and image GENERATION are OpenAI-only — Claude
+# (speech-to-text, text-to-speech) and image GENERATION are OpenAI-only: Claude
 # has no native audio API and does not generate images. The audio/image-gen
 # examples say so and degrade gracefully when PROVIDER=claude.
 
-# OpenAI — used when PROVIDER=openai (vision, Whisper STT, TTS, image gen).
+# OpenAI: used when PROVIDER=openai (vision, Whisper STT, TTS, image gen).
 openai>=1.30.0
 
-# Anthropic — used when PROVIDER=claude (vision chat; no audio/image-gen).
+# Anthropic: used when PROVIDER=claude (vision chat; no audio/image-gen).
 anthropic>=0.111.0
 
 # Nothing here is needed for the OFFLINE examples (the mock-vision demo and the
-# token-math demo) — those run on the standard library alone, with no key.
+# token-math demo): those run on the standard library alone, with no key.

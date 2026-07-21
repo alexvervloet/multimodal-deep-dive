@@ -1,11 +1,10 @@
 """
-Setup check — run this first.
-=============================
+Setup check: run this first.
 
     secrun python check_setup.py
 
 Checks your Python version, the installed packages, your chosen PROVIDER, the API
-key that provider needs, and that the sample assets are present — and tells you
+key that provider needs, and that the sample assets are present, and tells you
 exactly what to fix. It also prints which multimodal capabilities your provider
 supports, because they differ (vision works everywhere; audio and image
 generation are OpenAI-only).
@@ -71,7 +70,7 @@ PROVIDER_KEYS = {
     "openai": [("OPENAI_API_KEY", "sk-", "sk-your-openai-key-here")],
     "claude": [("ANTHROPIC_API_KEY", "sk-ant-", "sk-ant-your-key-here")],
 }
-# Capabilities per provider — kept in sync with multimodal/providers.py so the
+# Capabilities per provider: kept in sync with multimodal/providers.py so the
 # check works even before the SDKs are installed.
 CAPABILITIES = {
     "openai": {"vision": True, "audio (STT/TTS)": True, "image generation": True},
@@ -86,7 +85,7 @@ def check_python():
     if (major, minor) >= (3, 10):
         ok(f"Python {major}.{minor} (3.10+ required)")
         return True
-    fail(f"Python {major}.{minor} — this repo needs Python 3.10 or newer.")
+    fail(f"Python {major}.{minor}: this repo needs Python 3.10 or newer.")
     print("    Install a newer Python from https://www.python.org/downloads/")
     return False
 
@@ -108,9 +107,9 @@ def check_dependencies(provider):
     missing = []
     for import_name, pip_name, purpose in needed:
         if importlib.util.find_spec(import_name) is not None:
-            ok(f"{pip_name} — {purpose}")
+            ok(f"{pip_name}: {purpose}")
         else:
-            fail(f"{pip_name} MISSING — {purpose}")
+            fail(f"{pip_name} MISSING: {purpose}")
             missing.append(pip_name)
     if missing:
         print("\n    Install everything with:")
@@ -129,7 +128,7 @@ def check_keys(env, provider):
         value = _get(env, name)
         if not value or value == placeholder:
             fail(f"{name} is not set.")
-            print("    Store it in your OS keychain and run `secrun python check_setup.py` — see SECRETS.md.")
+            print("    Store it in your OS keychain and run `secrun python check_setup.py` . See SECRETS.md.")
             all_ok = False
         elif not value.startswith(prefix):
             warn(f"{name} is set but doesn't start with '{prefix}'. Double-check it.")
@@ -161,7 +160,7 @@ def show_capabilities(provider):
         if available:
             ok(f"{cap}")
         else:
-            warn(f"{cap} — not supported on {provider}; those examples will say so and skip")
+            warn(f"{cap}: not supported on {provider}; those examples will say so and skip")
 
 
 def main():
@@ -183,7 +182,7 @@ def main():
         print("Start here:  python examples/01_vision_offline.py")
         print("(Examples 01 and 09 are offline and need no key.)")
         return 0
-    print(_c("Not ready yet — fix the ✗ items above, then run this again.", "1;31"))
+    print(_c("Not ready yet. Fix the ✗ items above, then run this again.", "1;31"))
     print("(Examples 01 and 09 are offline, so you can run those without a key.)")
     return 1
 
