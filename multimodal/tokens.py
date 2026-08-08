@@ -27,9 +27,9 @@ pixels, and a downscale is the cheapest optimization you have.
 import math
 from dataclasses import dataclass
 
-# --- OpenAI gpt-4o-mini "high detail" tiling constants --------------------
-_OPENAI_BASE_TOKENS = 2833  # base tokens for gpt-4o-mini (higher than gpt-4o)
-_OPENAI_TILE_TOKENS = 5667  # per 512x512 tile, gpt-4o-mini
+# --- OpenAI gpt-5.4-nano "high detail" tiling constants --------------------
+_OPENAI_BASE_TOKENS = 2833  # base tokens for gpt-5.4-nano (higher than gpt-4o)
+_OPENAI_TILE_TOKENS = 5667  # per 512x512 tile, gpt-5.4-nano
 _OPENAI_MAX_SIDE = 2048  # image is first shrunk to fit a 2048x2048 box
 _OPENAI_SHORT_SIDE = 768  # then the shortest side is shrunk to 768
 _OPENAI_TILE = 512
@@ -51,7 +51,7 @@ class ImageCost:
 
 
 def openai_image_tokens(width: int, height: int) -> ImageCost:
-    """Estimate gpt-4o-mini image tokens for a width x height image (high detail).
+    """Estimate gpt-5.4-nano image tokens for a width x height image (high detail).
 
     The algorithm: shrink to fit a 2048 box, then shrink so the short side is 768,
     then count 512x512 tiles. Cost = base + tiles * per-tile."""

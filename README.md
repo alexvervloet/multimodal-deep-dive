@@ -61,7 +61,7 @@ Unlike the other repos in this series, the providers here genuinely differ in
 
 | `PROVIDER` | Vision (image in) | Audio (STT / TTS) | Image generation | Key needed |
 |------------|:-----------------:|:-----------------:|:----------------:|------------|
-| `openai` (default) | ✅ `gpt-4o-mini` | ✅ Whisper / TTS | ✅ `gpt-image-1` | `OPENAI_API_KEY` |
+| `openai` (default) | ✅ `gpt-5.4-nano` | ✅ Whisper / TTS | ✅ `gpt-image-1` | `OPENAI_API_KEY` |
 | `claude` | ✅ `claude-haiku-4-5` | ❌ no native audio API | ❌ vision-in only | `ANTHROPIC_API_KEY` |
 
 **Vision works on both.** Audio and image generation are **OpenAI-only**; Claude

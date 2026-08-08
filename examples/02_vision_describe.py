@@ -2,7 +2,7 @@
 Example 02: describe an image (real vision call).
 
 Same content-block shape as example 01, a text block plus an image block, but
-now it goes to a real vision model (gpt-4o-mini or claude-haiku-4-5). Vision works
+now it goes to a real vision model (gpt-5.4-nano or claude-haiku-4-5). Vision works
 on BOTH providers, so this runs either way; the only difference is the image
 block's shape, which providers.image_block() handles for you.
 

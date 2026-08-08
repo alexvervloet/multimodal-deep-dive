@@ -8,7 +8,7 @@ of this repo:
 
   capability          openai                         claude
   ----------          ------                         ------
-  vision (image in)   YES (gpt-4o-mini)              YES (claude-haiku-4-5)
+  vision (image in)   YES (gpt-5.4-nano)              YES (claude-haiku-4-5)
   audio in  (STT)     YES (whisper-1)                NO  (no native audio API)
   audio out (TTS)     YES (gpt-4o-mini-tts/tts-1)    NO
   image generation    YES (gpt-image-1)             NO
@@ -23,7 +23,7 @@ So this file does two things:
      so the examples degrade gracefully instead of crashing.
 
 Model IDs mirror the sibling repos (see rag/providers.py, agent/providers.py):
-OpenAI `gpt-4o-mini`, Claude `claude-haiku-4-5`: the cheap, fast workhorses.
+OpenAI `gpt-5.4-nano`, Claude `claude-haiku-4-5`: the cheap, fast workhorses.
 
 Clients are created lazily and cached, so importing this module never forces an
 SDK import or a network call.
@@ -34,7 +34,7 @@ import os
 from functools import lru_cache
 
 # --- Models per stack. Mirrors the sibling repos' cheap defaults. -----------
-_OPENAI_CHAT = "gpt-4o-mini"  # vision-capable chat
+_OPENAI_CHAT = "gpt-5.4-nano"  # vision-capable chat
 _OPENAI_STT = "whisper-1"  # speech-to-text
 _OPENAI_TTS = "gpt-4o-mini-tts"  # text-to-speech
 _OPENAI_IMAGE = "gpt-image-1"  # image generation
@@ -197,7 +197,7 @@ def chat(system: str, content_blocks: list[dict], max_tokens: int = 1024) -> str
     if p == "openai":
         resp = _openai_client().chat.completions.create(
             model=_OPENAI_CHAT,
-            max_tokens=max_tokens,
+            max_completion_tokens=max_tokens,
             messages=[
                 {"role": "system", "content": system},
                 {"role": "user", "content": content_blocks},  # type: ignore[arg-type]

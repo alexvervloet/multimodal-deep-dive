@@ -70,7 +70,7 @@ def main() -> None:
         table = Table(title="Estimated image-input tokens")  # type: ignore[possibly-undefined]
         table.add_column("image", style="cyan")
         table.add_column("size", justify="right")
-        table.add_column("openai (gpt-4o-mini)", justify="right", style="green")
+        table.add_column("openai (gpt-5.4-nano)", justify="right", style="green")
         table.add_column("claude", justify="right", style="magenta")
         for r in rows():
             table.add_row(*r)
