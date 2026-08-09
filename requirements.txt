@@ -14,10 +14,10 @@ rich>=13.0.0
 # examples say so and degrade gracefully when PROVIDER=claude.
 
 # OpenAI: used when PROVIDER=openai (vision, Whisper STT, TTS, image gen).
-openai>=1.30.0
+openai>=2.0,<3
 
 # Anthropic: used when PROVIDER=claude (vision chat; no audio/image-gen).
-anthropic>=0.111.0
+anthropic>=0.111.0,<1
 
 # Nothing here is needed for the OFFLINE examples (the mock-vision demo and the
 # token-math demo): those run on the standard library alone, with no key.
