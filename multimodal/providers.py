@@ -30,7 +30,9 @@ SDK import or a network call.
 """
 
 import base64
+import io
 import os
+import sys
 from functools import lru_cache
 
 # --- Models per stack. Mirrors the sibling repos' cheap defaults. -----------
@@ -92,8 +94,6 @@ def ensure_ready() -> None:
 
     Call this at the top of any script that makes a real API call, *after*
     `load_dotenv()`."""
-    import sys
-
     p = provider_name()
     if p not in _KEYS:
         sys.exit(f"PROVIDER={p!r} is not recognized. Set PROVIDER=openai or claude in .env.")
@@ -227,8 +227,6 @@ def transcribe(audio_bytes: bytes, filename: str = "audio.wav") -> str:
             f"PROVIDER={provider_name()} has no speech-to-text API. "
             f"Use PROVIDER=openai for transcription (Whisper)."
         )
-    import io
-
     f = io.BytesIO(audio_bytes)
     f.name = filename  # the SDK infers the format from the extension
     resp = _openai_client().audio.transcriptions.create(model=_OPENAI_STT, file=f)
