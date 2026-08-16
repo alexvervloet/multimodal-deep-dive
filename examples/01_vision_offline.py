@@ -20,6 +20,7 @@ Run it:
 """
 
 import json
+import base64
 import os
 import sys
 
@@ -37,8 +38,6 @@ def mock_vision(content_blocks: list[dict]) -> str:
     proving the image actually rode along in the request. It pulls the base64 out
     of whichever provider's block shape we built, decodes it, and reports the
     image's true dimensions plus the text we sent alongside."""
-    import base64
-
     text_parts, image_bytes = [], None
     for block in content_blocks:
         if block["type"] == "text":
