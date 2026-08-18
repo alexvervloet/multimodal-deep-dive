@@ -478,6 +478,10 @@ any order; this sequence builds naturally:
 - [Architecture](https://github.com/alexvervloet/architecture-deep-dive): the seams between the components, each decision measured rather than asserted
 - [Professional Tools](https://github.com/alexvervloet/professional-tools-deep-dive): rebuild each from-scratch primitive with the tool professionals reach for, and measure both
 
+And the whole series lands in one codebase in the
+[capstone](https://github.com/alexvervloet/deep-dive-capstone): a codebase Q&A tool
+built step by step, one tag per dive.
+
 **Multimodal is a bonus dive in the series**; it slots most naturally after the two
 API dives (#1–2) and pairs with RAG (#4), whose retrieval ideas Section 9 extends to
 images.
