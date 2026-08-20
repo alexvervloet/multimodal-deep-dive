@@ -1,21 +1,21 @@
 """
-make_assets.py — generate the repo's sample assets, from scratch, offline.
+make_assets.py: generate the repo's sample assets, from scratch, offline.
 =========================================================================
 
     python assets/make_assets.py
 
 Every asset this repo ships is generated here with ONLY the Python standard
-library — no Pillow, no downloads, no copyrighted images. That keeps the repo
+library, no Pillow, no downloads, no copyrighted images. That keeps the repo
 self-contained and the assets tiny and self-made:
 
-  receipt.png   — a small "receipt" image (the §3 structured-extraction demo)
-  chart.png     — a tiny bar chart (the §4 multi-image comparison demo)
-  note.wav      — one second of a 440 Hz tone (a stand-in audio clip for §5)
-  invoice.pdf   — a one-page invoice PDF (the §11 native-PDF-input demo)
+  receipt.png:  a small "receipt" image (the §3 structured-extraction demo)
+  chart.png:    a tiny bar chart (the §4 multi-image comparison demo)
+  note.wav:     one second of a 440 Hz tone (a stand-in audio clip for §5)
+  invoice.pdf:  a one-page invoice PDF (the §11 native-PDF-input demo)
 
 PNG is written by hand (zlib + a CRC) so you can *see* that an image is just
-bytes; WAV uses the stdlib `wave` module. You normally never need to run this —
-the assets are committed — but it's here so nothing in the repo is a mystery.
+bytes; WAV uses the stdlib `wave` module. You normally never need to run this
+(the assets are committed), but it's here so nothing in the repo is a mystery.
 """
 
 import math
@@ -63,7 +63,7 @@ def write_png(path: str, pixels: list[list[tuple[int, int, int]]]) -> None:
 
 
 # ---------------------------------------------------------------------------
-# A 5x7 pixel font — just enough glyphs to render a legible receipt.
+# A 5x7 pixel font, just enough glyphs to render a legible receipt.
 # Each glyph is 7 strings of 5 chars; '#' is ink, ' ' is background.
 # ---------------------------------------------------------------------------
 _FONT = {
@@ -136,7 +136,7 @@ def _draw_text(canvas, x: int, y: int, text: str, color=_INK) -> None:
 
 
 def make_receipt(path: str) -> None:
-    """A small store receipt — the §3 'extract structured JSON' demo input."""
+    """A small store receipt, the §3 'extract structured JSON' demo input."""
     lines = [
         "CORNER CAFE",
         "123 MAPLE ST",
@@ -164,7 +164,7 @@ def make_receipt(path: str) -> None:
 
 
 def make_chart(path: str) -> None:
-    """A tiny 3-bar chart — the §4 multi-image comparison demo input."""
+    """A tiny 3-bar chart, the §4 multi-image comparison demo input."""
     width, height = 130, 90
     canvas = _blank(width, height)
     # axes
@@ -193,7 +193,7 @@ def make_invoice_pdf(path: str) -> None:
     a page tree, a page, a content stream, a font), then a cross-reference table
     listing each object's byte offset, then a trailer. We build the objects, track
     where each one starts, and emit a correct xref so real parsers (and the vision
-    models) accept it. This is the §11 native-PDF demo input — a *document*, not a
+    models) accept it. This is the §11 native-PDF demo input, a *document*, not a
     screenshot of one."""
     lines = [
         "ACME CLOUD, INC.",
@@ -247,7 +247,7 @@ def make_invoice_pdf(path: str) -> None:
 
 
 def make_note_wav(path: str, seconds: float = 1.0, freq: float = 440.0) -> None:
-    """One second of a 440 Hz sine tone — a stand-in 'voice note' for §5/§6.
+    """One second of a 440 Hz sine tone, a stand-in 'voice note' for §5/§6.
 
     It's not speech (we won't ship a recording of a real person), but it IS a
     real, valid WAV file you can hand to a speech-to-text API to see the request
@@ -273,7 +273,7 @@ def main() -> None:
     for name in ("receipt.png", "chart.png", "note.wav", "invoice.pdf"):
         p = os.path.join(HERE, name)
         print(f"  wrote {name}  ({os.path.getsize(p):,} bytes)")
-    print("\nAll assets generated with the standard library — no Pillow, no downloads.")
+    print("\nAll assets generated with the standard library, no Pillow, no downloads.")
 
 
 if __name__ == "__main__":
