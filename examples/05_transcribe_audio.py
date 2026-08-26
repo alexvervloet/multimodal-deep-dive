@@ -11,7 +11,7 @@ is exactly what the voice-Q&A capstone does.
       does not crash. That honesty is the whole point of the capability table in
       multimodal/providers.py.
 
-The sample clip (assets/note.wav) is a self-made 440 Hz tone, not real speech 
+The sample clip (assets/note.wav) is a self-made 440 Hz tone, not real speech,
 so a perfect transcription would be empty or near-empty. That's fine: the goal
 here is to see the *request shape* and the round-trip, not to marvel at accuracy.
 Point it at a real voice recording to see real text.
