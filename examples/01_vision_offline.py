@@ -34,7 +34,7 @@ ASSETS = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))
 def mock_vision(content_blocks: list[dict]) -> str:
     """A deterministic, offline 'vision model'.
 
-    It can't really see, but it CAN inspect the bytes we put in the image block 
+    It can't really see, but it CAN inspect the bytes we put in the image block,
     proving the image actually rode along in the request. It pulls the base64 out
     of whichever provider's block shape we built, decodes it, and reports the
     image's true dimensions plus the text we sent alongside."""
