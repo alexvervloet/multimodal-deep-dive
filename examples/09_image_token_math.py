@@ -17,8 +17,8 @@ stable lesson is the SHAPE of the cost: tokens scale with pixels, so the single
 biggest lever you have is **downscaling the image before you send it**. We prove
 that by also pricing a half-size copy.
 
-  These are teaching approximations. The real token count always comes back
-      in the API response's usage field; trust that for billing.
+  ACCURACY: These are teaching approximations. The real token count always
+      comes back in the API response's usage field; trust that for billing.
 
 Run it:
 
