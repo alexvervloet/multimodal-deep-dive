@@ -22,7 +22,7 @@ So this file does two things:
      that raise a clear, friendly error when the active provider can't do them,
      so the examples degrade gracefully instead of crashing.
 
-Model IDs mirror the sibling repos (see rag/providers.py, agent/providers.py):
+Model IDs mirror the sibling repos (see ../rag-deep-dive/rag/providers.py, ../agents-deep-dive/agent/providers.py):
 OpenAI `gpt-5.4-nano`, Claude `claude-haiku-4-5`: the cheap, fast workhorses.
 
 Clients are created lazily and cached, so importing this module never forces an
