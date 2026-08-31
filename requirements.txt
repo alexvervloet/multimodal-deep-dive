@@ -1,8 +1,8 @@
 # Loads variables from a .env file (like OPENAI_API_KEY) into the environment.
-python-dotenv>=1.0.0
+python-dotenv>=1.0.0,<2
 
 # rich renders the tables and output in the examples and the capstone.
-rich>=13.0.0
+rich>=13.0.0,<16
 
 # --- Provider SDKs ---
 # You only strictly need the one matching your PROVIDER (see .env). Both are
