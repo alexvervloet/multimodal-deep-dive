@@ -1,6 +1,6 @@
 # Exercises: make the learning stick
 
-Reading code teaches you less than *predicting* what it will do and then checking.
+Reading code teaches you less than *predicting* what it'll do and then checking.
 This file turns each section of the [README](README.md) into a few quick
 active-recall prompts.
 
@@ -143,7 +143,7 @@ Sections 6 and 7 and you have a full voice loop.
 
 <details><summary>▸ Answer</summary>
 
-It prints a clear explanation that **Claude cannot generate images**. It's
+It prints a clear explanation that **Claude can't generate images**. It's
 vision-**in** only, with no image-generation endpoint at all, and it exits cleanly
 (no crash). Image generation is the single biggest capability gap in the repo:
 both providers READ images, only OpenAI WRITES one.
@@ -212,7 +212,7 @@ Screenshot-to-vision is the fallback for a model that can't accept a PDF, not th
 starting point.
 </details>
 
-**Do.** A PDF block and an image block go in the *same* place in a request. What is
+**Do.** A PDF block and an image block go in the *same* place in a request. What's
 that place, and what's the only per-provider difference?
 
 <details><summary>▸ Answer</summary>
