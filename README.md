@@ -26,11 +26,11 @@ each section.
 > putting the right modality in the right slot, and paying attention to what each one
 > costs.**
 
-That is the whole repo. A text request sends a string. A multimodal request sends a list of
+That's the whole repo. A text request sends a string. A multimodal request sends a list of
 typed content blocks: a text block and an image block, side by side in one user turn. Audio
 gets its own slot, a transcription endpoint. Everything below, from extraction and
 multi-image comparison to audio, generation, and multimodal RAG, is a variation on which
-modality goes in which slot. And because an image is not free, since it gets tokenized by its
+modality goes in which slot. And because an image isn't free, since it gets tokenized by its
 pixels, the second half of the skill is knowing what each slot costs. Hold onto that and
 none of this feels complicated.
 
@@ -64,7 +64,7 @@ rather than only in request shape, so the `PROVIDER` choice matters.
 | `claude` | yes, `claude-haiku-4-5` | no native audio API | no, vision in only | `ANTHROPIC_API_KEY` |
 
 Vision works on both. Audio and image generation are OpenAI-only, because Claude has no
-native audio API and does not generate images. The single file that knows all of this is
+native audio API and doesn't generate images. The single file that knows all of this is
 [multimodal/providers.py](multimodal/providers.py). Where a feature is single-provider, the
 example says so and skips the call with a clear message instead of crashing. The default is
 `openai`, because it exercises every section.
@@ -76,7 +76,7 @@ example says so and skips the call with a clear message instead of crashing. The
 
 ## 2. Image input, and the content-block shape
 
-A multimodal message is not a string. It is a list of typed content blocks. The foundational
+A multimodal message isn't a string. It's a list of typed content blocks. The foundational
 move is building that list: a text block holding your question and an image block holding
 your picture, in one user turn.
 
@@ -105,7 +105,7 @@ secrun python examples/02_vision_describe.py assets/chart.png "How many bars are
 ```
 
 This is the hello world of multimodality. Hand the model a picture and a question in one
-turn, get prose back. The image rode in the same message as the question, and that is the
+turn, get prose back. The image rode in the same message as the question, and that's the
 slot. See [examples/02_vision_describe.py](examples/02_vision_describe.py). It's a dozen
 lines around `providers.chat()`.
 
@@ -122,7 +122,7 @@ secrun python examples/03_structured_extraction.py
 ```
 
 The technique is pure prompting. Send the image, and in the system prompt demand a specific
-JSON shape and "return ONLY JSON." The example then `json.loads` the reply to prove it is
+JSON shape and "return ONLY JSON." The example then `json.loads` the reply to prove it's
 real machine-usable data, and strips the ` ```json ` fences a model sometimes adds anyway.
 The bundled `receipt.png` becomes `{merchant, date, items, subtotal, tax, total}`. That's a
 screenshot-to-database pipeline in about 30 lines, and the capstone wraps exactly this into
@@ -150,7 +150,7 @@ does that math.
 
 ## 6. Audio in, or speech-to-text
 
-A new modality, a new slot. Audio does not go in a chat content block. It goes to a
+A new modality, a new slot. Audio doesn't go in a chat content block. It goes to a
 dedicated transcription endpoint, Whisper. You hand it audio bytes and get back text, which
 can then flow into any text or vision prompt.
 
@@ -160,7 +160,7 @@ secrun python examples/05_transcribe_audio.py path/to/your/voice.mp3
 ```
 
 > **OpenAI-only.** Claude has no native audio API. With `PROVIDER=claude` this
-> example explains that and exits cleanly. It does not crash.
+> example explains that and exits cleanly. It doesn't crash.
 
 The bundled `note.wav` is a self-made 440 Hz tone rather than real speech, because we don't
 ship a recording of a person, so a perfect transcript is empty. The point is the request
@@ -199,7 +199,7 @@ secrun python examples/07_image_generation.py "a watercolor fox reading a book"
 
 > **OpenAI-only, and this is the biggest capability gap in the repo. Claude
 > does NOT generate images.** Claude is vision-**in** only: it can describe,
-> compare, and extract from images you give it, but it cannot create one. There is
+> compare, and extract from images you give it, but it can't create one. There's
 > no Anthropic image-generation endpoint. With `PROVIDER=claude` the example says
 > so and exits cleanly.
 
@@ -213,7 +213,7 @@ actually needs.
 
 RAG, from the [RAG deep dive](https://github.com/alexvervloet/rag-deep-dive), puts the right
 text in the model's context. But what if your knowledge base is images: screenshots, scanned
-pages, photos? You cannot embed a picture with a text embedder. The most practical pattern
+pages, photos? You can't embed a picture with a text embedder. The most practical pattern
 is caption-then-embed.
 
 ```bash
@@ -234,7 +234,7 @@ real embeddings, or true image embeddings, from the RAG dive and the shape is id
 
 ## 10. The token math of images
 
-Here is the most surprising fact in multimodality. An image is not free, and it is not one
+Here's the most surprising fact in multimodality. An image isn't free, and it isn't one
 token. A model tokenizes it into many tokens based on its pixel dimensions, and a big
 screenshot can cost more than a page of text.
 
@@ -254,7 +254,7 @@ approximations. For billing, trust the `usage` field in the real response.
 
 ## 11. Native PDF, handing the model the document instead of a screenshot
 
-Section 4 extracted a document by turning it into a picture and using vision. That is the
+Section 4 extracted a document by turning it into a picture and using vision. That's the
 workaround everyone starts with. It throws away the real text and the page structure, and
 it struggles past one page. What enterprise document pipelines actually reach for is native
 PDF input. Pass the PDF bytes as their own content block and the model reads the document
@@ -265,13 +265,13 @@ secrun python examples/10_native_pdf.py
 secrun python examples/10_native_pdf.py path/to/your.pdf
 ```
 
-It is the same one big idea: the right modality in the right slot. A PDF is another slot.
+It's the same one big idea: the right modality in the right slot. A PDF is another slot.
 `providers.pdf_block(bytes)` rides in the same user turn as your question, exactly like an
 image block, and only the envelope differs per provider: OpenAI takes a `file` part, Claude
 takes a `document` block. The example runs the same JSON-extraction discipline as §4 but
 over the bundled `invoice.pdf`, a real document rather than a screenshot of one, and
-`json.loads` the reply to prove it is machine-usable. Native PDF is the default for
-document work. The §4 screenshot route is the fallback for a model that cannot take a PDF,
+`json.loads` the reply to prove it's machine-usable. Native PDF is the default for
+document work. The §4 screenshot route is the fallback for a model that can't take a PDF,
 not the other way around. Native PDF support is model-specific, and the example exits
 cleanly if the active model refuses it.
 
@@ -321,7 +321,7 @@ slot. Not all of them fill every slot.
 | Extract structured data from screenshots | **Either** | It's a vision call + a JSON-shaped prompt, so provider-agnostic |
 | Transcribe audio (speech-to-text) | **OpenAI** | Claude has no native audio API |
 | Synthesize speech (text-to-speech) | **OpenAI** | Same: audio out is OpenAI-only |
-| Generate or edit an image | **OpenAI** | Claude is vision-in only; it cannot create images |
+| Generate or edit an image | **OpenAI** | Claude is vision-in only; it can't create images |
 | One key, the whole repo | **OpenAI** | It exercises every section; `claude` covers the vision half |
 
 Rule of thumb. If your app is vision-only, doing analysis, extraction, and comparison,
@@ -363,7 +363,7 @@ right slot, mindful of the cost.
 ## From teaching code to production
 
 The "Where to go next" section is about adding modalities. This one is about the
-operational layer any multimodal app needs once people rely on it. It is independent of
+operational layer any multimodal app needs once people rely on it. It's independent of
 which modality you send, and the same for any LLM app.
 
 | This repo's teaching shortcut | In production |
