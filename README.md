@@ -151,8 +151,14 @@ does that math.
 ## 6. Audio in, or speech-to-text
 
 A new modality, a new slot. Audio doesn't go in a chat content block. It goes to a
-dedicated transcription endpoint, Whisper. You hand it audio bytes and get back text, which
-can then flow into any text or vision prompt.
+dedicated transcription endpoint. You hand it audio bytes and get back text, which can then
+flow into any text or vision prompt.
+
+The model is `gpt-transcribe`, at $0.0045 per minute. It replaced `whisper-1`, which is
+deprecated and shuts down on 2027-02-26. The swap isn't a pure upgrade, which is the part
+worth knowing: `gpt-transcribe` is more accurate and cheaper, but it drops word-level
+timestamps, SRT and VTT subtitle export, and the translate-to-English endpoint. If you
+need any of those, you need them from somewhere other than OpenAI before that date.
 
 ```bash
 secrun python examples/05_transcribe_audio.py

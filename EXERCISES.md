@@ -103,8 +103,8 @@ providers can transcribe?
 
 <details><summary>▸ Answer</summary>
 
-No. Audio goes to a **dedicated transcription endpoint** (Whisper), not into a
-chat block. You get text back, which can then flow into any text/vision prompt.
+No. Audio goes to a **dedicated transcription endpoint** (`gpt-transcribe`), not
+into a chat block. You get text back, which can then flow into any text/vision prompt.
 And it's **OpenAI-only**: Claude has no native audio API, so the example detects
 that and skips cleanly on `claude`.
 </details>

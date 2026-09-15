@@ -9,7 +9,7 @@ of this repo:
   capability          openai                         claude
   ----------          ------                         ------
   vision (image in)   YES (gpt-5.4-nano)              YES (claude-haiku-4-5)
-  audio in  (STT)     YES (whisper-1)                NO  (no native audio API)
+  audio in  (STT)     YES (gpt-transcribe)           NO  (no native audio API)
   audio out (TTS)     YES (gpt-4o-mini-tts/tts-1)    NO
   image generation    YES (gpt-image-1)             NO
 
@@ -37,7 +37,7 @@ from functools import lru_cache
 
 # --- Models per stack. Mirrors the sibling repos' cheap defaults. -----------
 _OPENAI_CHAT = "gpt-5.4-nano"  # vision-capable chat
-_OPENAI_STT = "whisper-1"  # speech-to-text
+_OPENAI_STT = "gpt-transcribe"  # speech-to-text (whisper-1 shuts down 2027-02-26)
 _OPENAI_TTS = "gpt-4o-mini-tts"  # text-to-speech
 _OPENAI_IMAGE = "gpt-image-1"  # image generation
 _CLAUDE_CHAT = "claude-haiku-4-5"  # vision-capable chat
@@ -221,11 +221,11 @@ def chat(system: str, content_blocks: list[dict], max_tokens: int = 1024) -> str
 # catch that and print an honest note: no crashes, no pretending.
 # ---------------------------------------------------------------------------
 def transcribe(audio_bytes: bytes, filename: str = "audio.wav") -> str:
-    """Speech-to-text. OpenAI only (Whisper). Claude has no native audio API."""
+    """Speech-to-text. OpenAI only. Claude has no native audio API."""
     if not supports("stt"):
         raise UnsupportedCapability(
             f"PROVIDER={provider_name()} has no speech-to-text API. "
-            f"Use PROVIDER=openai for transcription (Whisper)."
+            f"Use PROVIDER=openai for transcription."
         )
     f = io.BytesIO(audio_bytes)
     f.name = filename  # the SDK infers the format from the extension
