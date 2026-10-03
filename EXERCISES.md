@@ -189,10 +189,10 @@ tiny assets. What's the single cheapest optimization, and why does halving a
 <details><summary>▸ Answer</summary>
 
 **Downscale before sending**: fewer pixels, fewer tokens. Halving a small image
-changes nothing because it already fits in a single 512×512 tile (OpenAI) or is
-already under the cap (Claude); the lever only bites once an image spans multiple
-tiles, which the phone-screenshot row demonstrates (halving each side saved
-~11k tokens).
+barely matters because it's only a few dozen 32×32 patches (OpenAI) or already far
+under the cap (Claude); the lever bites once an image runs to thousands of patches,
+which the phone-screenshot row demonstrates (halving each side saved about 1,900
+of 2,851 tokens, two thirds of the bill).
 </details>
 
 ---
