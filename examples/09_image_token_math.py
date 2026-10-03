@@ -9,13 +9,18 @@ no cost, so you can budget BEFORE you send.
 It uses the real PNG dimensions of the repo's assets (read straight from the file
 header) and runs them through each provider's documented tokenization scheme:
 
-  OpenAI (gpt-4o family): base tokens + 512x512 tiles after a resize.
+  OpenAI (gpt-6-luna): about 1.2 tokens per 32x32 patch, after a resize that
+      depends on `detail`. Measured against real bills; see tests/test_tokens.py.
   Claude: tokens ≈ (width * height) / 750, with a cap.
 
 The two numbers differ, which is expected; the providers tokenize differently. The
 stable lesson is the SHAPE of the cost: tokens scale with pixels, so the single
 biggest lever you have is **downscaling the image before you send it**. We prove
 that by also pricing a half-size copy.
+
+The second OpenAI column is the trap. Leave `detail` out and luna uses "auto",
+which on this model means "don't shrink": the 4K grab costs more than three times
+what "high" charges. The repo's providers.py sets "high" for exactly this reason.
 
   ACCURACY: These are teaching approximations. The real token count always
       comes back in the API response's usage field; trust that for billing.
@@ -59,8 +64,9 @@ HYPOTHETICAL = [
 def rows():
     for label, w, h in ASSETS + HYPOTHETICAL:
         o = tokens.estimate("openai", w, h)
+        auto = tokens.openai_image_tokens(w, h, detail="auto")
         c = tokens.estimate("claude", w, h)
-        yield (label, f"{w}x{h}", str(o.tokens), str(c.tokens))
+        yield (label, f"{w}x{h}", str(o.tokens), str(auto.tokens), str(c.tokens))
 
 
 def main() -> None:
@@ -70,19 +76,20 @@ def main() -> None:
         table = Table(title="Estimated image-input tokens")  # type: ignore[possibly-undefined]
         table.add_column("image", style="cyan")
         table.add_column("size", justify="right")
-        table.add_column("openai (gpt-5.4-nano)", justify="right", style="green")
+        table.add_column("openai high", justify="right", style="green")
+        table.add_column("openai auto", justify="right", style="red")
         table.add_column("claude", justify="right", style="magenta")
         for r in rows():
             table.add_row(*r)
         Console().print(table)  # type: ignore[possibly-undefined]
     else:
-        print(f"{'image':<22}{'size':>12}{'openai':>10}{'claude':>10}")
-        for label, size, o, c in rows():
-            print(f"{label:<22}{size:>12}{o:>10}{c:>10}")
+        print(f"{'image':<22}{'size':>12}{'openai high':>13}{'openai auto':>13}{'claude':>10}")
+        for label, size, o, auto, c in rows():
+            print(f"{label:<22}{size:>12}{o:>13}{auto:>13}{c:>10}")
 
     # The downscaling lever, made concrete: use a LARGE image, where it bites.
-    # (A tiny image already fits in one tile, so resizing it changes nothing; the
-    # lever only matters once an image spans multiple tiles.)
+    # (A tiny image is only a few patches, so resizing it barely matters; the
+    # lever bites once an image runs to thousands of patches.)
     name, w, h = "a phone screenshot", 1170, 2532
     full = tokens.estimate("openai", w, h)
     half = tokens.estimate("openai", w // 2, h // 2)
@@ -98,6 +105,8 @@ def main() -> None:
         "\nTakeaways:\n"
         "  - A big screenshot can cost thousands of tokens, more than a page of text.\n"
         "  - Tokens scale with pixels, so resizing down is your cheapest optimization.\n"
+        "  - Set `detail` yourself. A default that changed between models just\n"
+        "    tripled the cost of a 4K image.\n"
         "  - The two providers tokenize differently; the SHAPE of the cost is the\n"
         "    stable lesson. For billing, trust the usage field in the real response."
     )
