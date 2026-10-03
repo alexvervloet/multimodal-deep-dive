@@ -8,7 +8,7 @@ of this repo:
 
   capability          openai                         claude
   ----------          ------                         ------
-  vision (image in)   YES (gpt-5.4-nano)              YES (claude-haiku-4-5)
+  vision (image in)   YES (gpt-6-luna)                YES (claude-haiku-4-5)
   audio in  (STT)     YES (gpt-transcribe)           NO  (no native audio API)
   audio out (TTS)     YES (gpt-4o-mini-tts/tts-1)    NO
   image generation    YES (gpt-image-1)             NO
@@ -23,7 +23,8 @@ So this file does two things:
      so the examples degrade gracefully instead of crashing.
 
 Model IDs mirror the sibling repos (see ../rag-deep-dive/rag/providers.py, ../agents-deep-dive/agent/providers.py):
-OpenAI `gpt-5.4-nano`, Claude `claude-haiku-4-5`: the cheap, fast workhorses.
+OpenAI `gpt-6-luna`, Claude `claude-haiku-4-5`: the cheap, fast workhorses. Luna
+reasons by default; `chat()` sends `reasoning_effort="none"` so it answers directly.
 
 Clients are created lazily and cached, so importing this module never forces an
 SDK import or a network call.
@@ -36,7 +37,7 @@ import sys
 from functools import lru_cache
 
 # --- Models per stack. Mirrors the sibling repos' cheap defaults. -----------
-_OPENAI_CHAT = "gpt-5.4-nano"  # vision-capable chat
+_OPENAI_CHAT = "gpt-6-luna"  # vision-capable chat
 _OPENAI_STT = "gpt-transcribe"  # speech-to-text (whisper-1 shuts down 2027-02-26)
 _OPENAI_TTS = "gpt-4o-mini-tts"  # text-to-speech
 _OPENAI_IMAGE = "gpt-image-1"  # image generation
@@ -144,9 +145,12 @@ def image_block(data: bytes, media_type: str = "image/png") -> dict:
     b64 = base64.standard_b64encode(data).decode("ascii")
     p = provider_name()
     if p == "openai":
+        # Set detail on purpose. On gpt-6-luna the default ("auto") doesn't shrink
+        # large images, so a 4K screenshot costs over three times what "high"
+        # does. See multimodal/tokens.py for the measured numbers.
         return {
             "type": "image_url",
-            "image_url": {"url": f"data:{media_type};base64,{b64}"},
+            "image_url": {"url": f"data:{media_type};base64,{b64}", "detail": "high"},
         }
     if p == "claude":
         return {
@@ -197,6 +201,7 @@ def chat(system: str, content_blocks: list[dict], max_tokens: int = 1024) -> str
     if p == "openai":
         resp = _openai_client().chat.completions.create(
             model=_OPENAI_CHAT,
+            reasoning_effort="none",  # luna thinks by default; this is a describe task
             max_completion_tokens=max_tokens,
             messages=[
                 {"role": "system", "content": system},
