@@ -13,26 +13,29 @@ real number always comes back in the API response's usage field.
 
 Two provider models, two different schemes:
 
-  OpenAI (gpt-4o family): a base cost + a per-tile cost. The image is scaled to
-  fit a budget, then chopped into 512x512 tiles; each tile costs a fixed number
-  of tokens, plus one base amount.
+  OpenAI (gpt-6-luna, and gpt-5.4-nano before it): about 1.2 tokens per 32x32
+  pixel patch. The `detail` setting decides how many patches you can be billed
+  for: "high" shrinks big images to fit 2,500 patches, "low" to 256, and "auto"
+  (the default) doesn't shrink at all on luna.
 
   Claude: tokens ≈ (width * height) / 750, capped: a simple area-based rule.
 
-The exact constants below match each provider's published guidance at the time of
-writing; the point is the *shape* of the cost, which is stable: tokens scale with
-pixels, and a downscale is the cheapest optimization you have.
+The OpenAI constants below were measured against the live API on 2026-10-03
+(`usage.prompt_tokens` minus a text-only baseline) and are pinned by
+tests/test_tokens.py. They replaced tile constants that put a 512x512 image at
+8,500 tokens; both models bill 307. The Claude rule follows Anthropic's published
+guidance. The *shape* of the cost is what lasts: tokens scale with pixels, and a
+downscale is the cheapest optimization you have.
 """
 
 import math
 from dataclasses import dataclass
 
-# --- OpenAI gpt-5.4-nano "high detail" tiling constants --------------------
-_OPENAI_BASE_TOKENS = 2833  # base tokens for gpt-5.4-nano (higher than gpt-4o)
-_OPENAI_TILE_TOKENS = 5667  # per 512x512 tile, gpt-5.4-nano
-_OPENAI_MAX_SIDE = 2048  # image is first shrunk to fit a 2048x2048 box
-_OPENAI_SHORT_SIDE = 768  # then the shortest side is shrunk to 768
-_OPENAI_TILE = 512
+# --- OpenAI patch rule (gpt-6-luna; gpt-5.4-nano measured the same) -------
+_OPENAI_PATCH = 32  # the image is cut into 32x32-pixel patches
+_OPENAI_TOKENS_PER_PATCH = 1.2
+_OPENAI_PATCH_BUDGET = {"high": 2_500, "low": 256}  # "auto" has no budget on luna
+_OPENAI_MAX_PATCHES = 30_000  # past this, luna returns a 400 instead of resizing
 
 # --- Claude area rule -----------------------------------------------------
 _CLAUDE_TOKENS_PER_PIXEL = 1 / 750  # tokens ≈ (w*h)/750
@@ -50,32 +53,49 @@ class ImageCost:
     explanation: str
 
 
-def openai_image_tokens(width: int, height: int) -> ImageCost:
-    """Estimate gpt-5.4-nano image tokens for a width x height image (high detail).
+def _patches(width: float, height: float) -> int:
+    return math.ceil(width / _OPENAI_PATCH) * math.ceil(height / _OPENAI_PATCH)
 
-    The algorithm: shrink to fit a 2048 box, then shrink so the short side is 768,
-    then count 512x512 tiles. Cost = base + tiles * per-tile."""
-    w, h = width, height
-    # 1. Fit within a 2048x2048 box.
-    if max(w, h) > _OPENAI_MAX_SIDE:
-        scale = _OPENAI_MAX_SIDE / max(w, h)
-        w, h = round(w * scale), round(h * scale)
-    # 2. Scale the shortest side down to 768.
-    if min(w, h) > _OPENAI_SHORT_SIDE:
-        scale = _OPENAI_SHORT_SIDE / min(w, h)
-        w, h = round(w * scale), round(h * scale)
-    # 3. Count 512x512 tiles (round up).
-    tiles = math.ceil(w / _OPENAI_TILE) * math.ceil(h / _OPENAI_TILE)
-    tokens = _OPENAI_BASE_TOKENS + tiles * _OPENAI_TILE_TOKENS
+
+def openai_image_tokens(width: int, height: int, detail: str = "high") -> ImageCost:
+    """Estimate gpt-6-luna image tokens for a width x height image.
+
+    The algorithm: count 32x32 patches. If that's over the budget for `detail`,
+    shrink the image (keeping its shape) until a whole number of patches fits,
+    then count again. Cost = patches * 1.2, rounded down.
+
+    `detail="auto"` is what you get if you leave `detail` out, and on luna it
+    applies no budget: a 3000x3000 photo is 8,836 patches, 10,603 tokens. The
+    same photo at "high" is 3,000. gpt-5.4-nano treated "auto" like "high", so
+    the cheaper model can be the pricier one for big images."""
+    if detail not in ("high", "low", "auto"):
+        raise ValueError(f"detail must be 'high', 'low', or 'auto', not {detail!r}")
+    patches = _patches(width, height)
+    budget = _OPENAI_PATCH_BUDGET.get(detail)
+    w, h = float(width), float(height)
+    if budget is not None and patches > budget:
+        # Shrink so the area fits the budget, then a little more so both sides
+        # land on a whole number of patches.
+        shrink = math.sqrt(_OPENAI_PATCH**2 * budget / (width * height))
+        across, down = width * shrink / _OPENAI_PATCH, height * shrink / _OPENAI_PATCH
+        shrink *= min(math.floor(across) / across, math.floor(down) / down)
+        w, h = width * shrink, height * shrink
+        # One side now lands exactly on a patch boundary; the other rounds up.
+        # The epsilon keeps float noise on the exact side from adding a patch.
+        patches = math.ceil(w / _OPENAI_PATCH - 1e-6) * math.ceil(h / _OPENAI_PATCH - 1e-6)
+    if patches > _OPENAI_MAX_PATCHES:
+        raise ValueError(
+            f"{width}x{height} at detail={detail!r} is {patches:,} patches; luna rejects "
+            f"anything over {_OPENAI_MAX_PATCHES:,}. Resize it, or use detail='high'."
+        )
+    tokens = int(patches * _OPENAI_TOKENS_PER_PATCH)
+    scaled = f"scaled to {round(w)}x{round(h)}, " if (round(w), round(h)) != (width, height) else ""
     return ImageCost(
         provider="openai",
         width=width,
         height=height,
         tokens=tokens,
-        explanation=(
-            f"scaled to {w}x{h}, {tiles} tile(s) of {_OPENAI_TILE}px -> "
-            f"{_OPENAI_BASE_TOKENS} base + {tiles}*{_OPENAI_TILE_TOKENS}"
-        ),
+        explanation=f"detail={detail}: {scaled}{patches:,} patches x {_OPENAI_TOKENS_PER_PATCH}",
     )
 
 
