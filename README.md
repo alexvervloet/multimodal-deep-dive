@@ -60,7 +60,7 @@ rather than only in request shape, so the `PROVIDER` choice matters.
 
 | `PROVIDER` | Vision (image in) | Audio (STT / TTS) | Image generation | Key needed |
 |------------|:-----------------:|:-----------------:|:----------------:|------------|
-| `openai` (default) | yes, `gpt-5.4-nano` | yes, Whisper and TTS | yes, `gpt-image-1` | `OPENAI_API_KEY` |
+| `openai` (default) | yes, `gpt-6-luna` | yes, Whisper and TTS | yes, `gpt-image-1` | `OPENAI_API_KEY` |
 | `claude` | yes, `claude-haiku-4-5` | no native audio API | no, vision in only | `ANTHROPIC_API_KEY` |
 
 Vision works on both. Audio and image generation are OpenAI-only, because Claude has no
@@ -249,12 +249,14 @@ python examples/09_image_token_math.py        # offline, no key, no cost
 ```
 
 This computes that cost with pure arithmetic and no API call, using the real PNG dimensions
-of the repo's assets and each provider's documented scheme. OpenAI uses a base plus 512×512
-tiles, Claude uses roughly area divided by 750. The two numbers differ, and the stable
-lesson is the shape. Tokens scale with pixels, so downscaling before you send is your
-cheapest optimization. The example proves it by pricing a phone screenshot at full size and
-at half size, where halving each side saves about 11k tokens. These are teaching
-approximations. For billing, trust the `usage` field in the real response.
+of the repo's assets. OpenAI bills about 1.2 tokens per 32×32 patch (measured against real
+bills, pinned by `tests/test_tokens.py`), Claude uses roughly area divided by 750. The two
+numbers differ, and the stable lesson is the shape. Tokens scale with pixels, so downscaling
+before you send is your cheapest optimization. The example proves it by pricing a phone
+screenshot at full size and at half size, where halving each side saves about 1,900 of
+2,851 tokens. It also prices each image with `detail` left at its default. On `gpt-6-luna`
+that default doesn't shrink anything, and a 4K screen grab costs 9,792 tokens instead of
+2,930. Set `detail` yourself. For billing, trust the `usage` field in the real response.
 
 ---
 
