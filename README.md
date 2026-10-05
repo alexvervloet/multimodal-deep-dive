@@ -236,6 +236,14 @@ from-scratch and dependency-free, the example uses a tiny bag-of-words cosine in
 real embedding model. Not production-grade, and enough to show the architecture. Swap in
 real embeddings, or true image embeddings, from the RAG dive and the shape is identical.
 
+Word overlap also shows you its weakness. The captions are written for search (what kind
+of image, what information it holds), and a stopword list keeps "the" and "of" from
+deciding the match, which they did before it existed: the default question retrieved the
+chart every time. The example prints each image's score. On the claude stack, Haiku
+captions the receipt as "itemized purchases", which shares no word with "prices of
+items", so both images score 0 and the example tells you the pick was arbitrary. Real
+embeddings know those words are related.
+
 ---
 
 ## 10. The token math of images
