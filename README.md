@@ -60,7 +60,7 @@ rather than only in request shape, so the `PROVIDER` choice matters.
 
 | `PROVIDER` | Vision (image in) | Audio (STT / TTS) | Image generation | Key needed |
 |------------|:-----------------:|:-----------------:|:----------------:|------------|
-| `openai` (default) | yes, `gpt-6-luna` | yes, Whisper and TTS | yes, `gpt-image-1` | `OPENAI_API_KEY` |
+| `openai` (default) | yes, `gpt-6-luna` | yes, transcription and TTS | yes, `gpt-image-2.5-flare` | `OPENAI_API_KEY` |
 | `claude` | yes, `claude-haiku-4-5` | no native audio API | no, vision in only | `ANTHROPIC_API_KEY` |
 
 Vision works on both. Audio and image generation are OpenAI-only, because Claude has no
@@ -196,7 +196,9 @@ transcribe it, answer it, speak the answer back.
 ## 8. Image generation and editing
 
 So far every example put an image into the model. This one gets an image out. A text prompt
-becomes a brand-new picture, via `gpt-image-1`.
+becomes a brand-new picture, via `gpt-image-2.5-flare`. The code asks for `quality="low"`
+on purpose: the API's default lets the model choose, the levels run up to `"max"`, and a
+1024x1024 image cost about $0.006 at low and $0.013 at medium when measured.
 
 ```bash
 secrun python examples/07_image_generation.py
