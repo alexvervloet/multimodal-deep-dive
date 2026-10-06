@@ -11,7 +11,7 @@ of this repo:
   vision (image in)   YES (gpt-6-luna)                YES (claude-haiku-4-5)
   audio in  (STT)     YES (gpt-transcribe)           NO  (no native audio API)
   audio out (TTS)     YES (gpt-4o-mini-tts/tts-1)    NO
-  image generation    YES (gpt-image-1)             NO
+  image generation    YES (gpt-image-2.5-flare)     NO
 
 So this file does two things:
 
@@ -40,7 +40,7 @@ from functools import lru_cache
 _OPENAI_CHAT = "gpt-6-luna"  # vision-capable chat
 _OPENAI_STT = "gpt-transcribe"  # speech-to-text (whisper-1 shuts down 2027-02-26)
 _OPENAI_TTS = "gpt-4o-mini-tts"  # text-to-speech
-_OPENAI_IMAGE = "gpt-image-1"  # image generation
+_OPENAI_IMAGE = "gpt-image-2.5-flare"  # image generation (gpt-image-1 shut down 2026-10-23)
 _CLAUDE_CHAT = "claude-haiku-4-5"  # vision-capable chat
 
 _KEYS = {"openai": ["OPENAI_API_KEY"], "claude": ["ANTHROPIC_API_KEY"]}
@@ -251,14 +251,20 @@ def speak(text: str, voice: str = "alloy") -> bytes:
     return resp.content  # raw audio bytes (MP3)
 
 
-def generate_image(prompt: str, size: str = "1024x1024") -> bytes:
-    """Text-to-image -> PNG bytes. OpenAI only (gpt-image-1). Claude can't generate
-    images; it's vision-in only."""
+def generate_image(prompt: str, size: str = "1024x1024", quality: str = "low") -> bytes:
+    """Text-to-image -> PNG bytes. OpenAI only (gpt-image-2.5-flare). Claude can't
+    generate images; it's vision-in only.
+
+    `quality` is set on purpose. The API's default, "auto", lets the model pick,
+    and the levels run up to "max". Measured 2026-10-05 on a 1024x1024 image: "low"
+    cost about $0.006 (196 output tokens) and "medium" about $0.013 (439 tokens)."""
     if not supports("image_gen"):
         raise UnsupportedCapability(
             f"PROVIDER={provider_name()} cannot generate images (it's vision-in only). "
-            f"Use PROVIDER=openai for image generation (gpt-image-1)."
+            f"Use PROVIDER=openai for image generation (gpt-image-2.5-flare)."
         )
-    resp = _openai_client().images.generate(model=_OPENAI_IMAGE, prompt=prompt, size=size)
+    resp = _openai_client().images.generate(
+        model=_OPENAI_IMAGE, prompt=prompt, size=size, quality=quality  # type: ignore[arg-type]
+    )
     assert resp.data is not None
     return base64.b64decode(resp.data[0].b64_json or "")
