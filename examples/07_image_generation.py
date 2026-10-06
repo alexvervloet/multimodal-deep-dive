@@ -2,7 +2,7 @@
 Example 07: image GENERATION (text -> image).
 
 So far every example put an image INTO the model. This one gets an image OUT: a
-text prompt becomes a brand-new picture (OpenAI's gpt-image-1).
+text prompt becomes a brand-new picture (OpenAI's gpt-image-2.5-flare).
 
   PROVIDER SUPPORT: OpenAI-only, and this is the biggest capability gap in
       the whole repo. **Claude does NOT generate images.** Claude is vision-IN
@@ -38,7 +38,7 @@ if not providers.supports("image_gen"):
     print(
         f"PROVIDER={providers.provider_name()} cannot generate images.\n"
         f"Claude is vision-IN only and has no image-generation endpoint at all.\n"
-        f"To run this example, set PROVIDER=openai in .env (gpt-image-1).\n"
+        f"To run this example, set PROVIDER=openai in .env (gpt-image-2.5-flare).\n"
         f"Skipping the call; nothing went wrong."
     )
     sys.exit(0)
