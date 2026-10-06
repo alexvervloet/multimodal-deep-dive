@@ -187,6 +187,13 @@ secrun python examples/06_text_to_speech.py "Hello from the multimodal deep dive
 > **OpenAI-only**, like transcription. Claude has no TTS API; the example skips
 > cleanly on `claude`.
 
+> **This model has a shutdown date.** `gpt-4o-mini-tts` was deprecated on 2026-10-01
+> and stops working on 2027-01-06, along with `tts-1` and `tts-1-hd`. The replacement
+> OpenAI names, `gpt-realtime-2.1-mini`, only works over the Realtime API, a streaming
+> WebSocket session rather than this one request-and-response call. As of 2026-10-06
+> there's no successor on the simple speech endpoint, so this example stays as it is
+> until there is one or the date gets close.
+
 The result gets written to `out/spoken.mp3`, which is git-ignored. Open it in any audio
 player. Combine Sections 6 and 7 and you have a full voice loop: speak a question,
 transcribe it, answer it, speak the answer back.
