@@ -10,7 +10,7 @@ of this repo:
   ----------          ------                         ------
   vision (image in)   YES (gpt-6-luna)                YES (claude-haiku-4-5)
   audio in  (STT)     YES (gpt-transcribe)           NO  (no native audio API)
-  audio out (TTS)     YES (gpt-4o-mini-tts/tts-1)    NO
+  audio out (TTS)     YES (gpt-4o-mini-tts)          NO
   image generation    YES (gpt-image-2.5-flare)     NO
 
 So this file does two things:
@@ -39,7 +39,11 @@ from functools import lru_cache
 # --- Models per stack. Mirrors the sibling repos' cheap defaults. -----------
 _OPENAI_CHAT = "gpt-6-luna"  # vision-capable chat
 _OPENAI_STT = "gpt-transcribe"  # speech-to-text (whisper-1 shuts down 2027-02-26)
-_OPENAI_TTS = "gpt-4o-mini-tts"  # text-to-speech
+# Text-to-speech. Deprecated 2026-10-01, shuts down 2027-01-06, along with tts-1
+# and tts-1-hd. OpenAI's named replacement, gpt-realtime-2.1-mini, only runs over
+# the Realtime API (WebSocket/WebRTC), not the audio.speech endpoint used here, and
+# as of 2026-10-06 no speech-endpoint successor exists. Revisit before January.
+_OPENAI_TTS = "gpt-4o-mini-tts"
 _OPENAI_IMAGE = "gpt-image-2.5-flare"  # image generation (gpt-image-1 shut down 2026-10-23)
 _CLAUDE_CHAT = "claude-haiku-4-5"  # vision-capable chat
 
