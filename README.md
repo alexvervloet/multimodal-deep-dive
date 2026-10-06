@@ -459,7 +459,7 @@ Run `secrun python check_setup.py` first; it catches most problems. Then, by sym
 | Extraction returns prose, not JSON / a parse error | The model didn't follow the JSON instruction. Tighten the schema in the prompt, or try a stronger model. The examples strip ` ```json ` fences for you. |
 | The transcript is empty | The bundled `note.wav` is a tone, not speech, so there's nothing to transcribe. Point it at a real voice recording. |
 | An image "costs" thousands of tokens | That's real: images are tokenized by pixels (Section 10). Downscale before sending. |
-| `SyntaxError` / odd type errors on startup | You're likely on Python 3.9 or older; this repo needs 3.10+. `check_setup.py` confirms your version. |
+| `SyntaxError` / odd type errors on startup | You're likely on Python 3.10 or older; this repo needs 3.11+. `check_setup.py` confirms your version. |
 
 Still stuck? Every file is small and self-contained. Open it, read the docstring
 at the top, and run it directly. [multimodal/providers.py](multimodal/providers.py)
